@@ -169,6 +169,10 @@
   
   function deleteMessage(self){
 	  
+	  if(prompt("password")!=123){
+		  return;
+	  }
+	  
 	  //get message ID
 	  var messageId = self.getAttribute("data-id");
 	  
