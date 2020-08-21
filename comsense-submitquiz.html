@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="css/animate.css">
+<!-- Icomoon Icon Fonts-->
+<link rel="stylesheet" href="css/icomoon.css">
+<!-- Bootstrap  -->
+<link rel="stylesheet" href="css/bootstrap.css">
+<!-- Theme style  -->
+<link rel="stylesheet" href="css/bootstrapmin.css">
+
+<style>
+    .font_test1 { text-decoration:underline }
+    .font_test2 { text-decoration:overline }
+    .font_test3 { text-decoration:line-through }
+</style>
+
+
+
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<input type="button" value="대기실로 돌아가기" onclick="gotoroomlist();">
+<input type="button" class="font_test3" value="--방만들기" onclick="">
+<input type="button" value="--랭킹 보기" onclick="">
+&emsp;
+<input type="button" value="--문제 입력하기" onclick="">
+
+
+  
+<br><br>
+  <font> 
+  블로그(https://blog.naver.com/daum1313/220050440091) 문제 입력하기</font>
+<input type="button" value="문제입력" onclick="submitgangbogi();">
+
+  
+    <!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Main -->	
+	<script src="js/main.js"></script>
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
+	
+	<!-- include firebase database -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+  
+
+<script>
+
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyCqVORIxXazIGcKlIaGTKn4YgX8R6Kg5Os",
+    authDomain: "fir-chattutorial-5f637.firebaseapp.com",
+    databaseURL: "https://fir-chattutorial-5f637.firebaseio.com",
+    projectId: "firebasechattutorial",
+    storageBucket: "firebasechattutorial.appspot.com",
+    messagingSenderId: "1084417645508",
+    appId: "1:1084417645508:web:a86d313330cba20b0f2291"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  
+
+</script>
+
+
+<script>
+//<<<<<<<<<<<<		jvvaa script	<<<<<<<<<<<<<<<<<
+
+function gotoroomlist(){
+	  location.href="comsense-gameroomlist.html";
+}
+
+function submitgangbogi(){
+	  location.href="comsense-submitquiz-gangbogi.html";
+}
+
+
+  
+</script>
+
+<script>
+// <<<<<<<<<<<<		modal	<<<<<<<<<<<<<<<<<
+
+	
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="css/animate.css">
+<!-- Icomoon Icon Fonts-->
+<link rel="stylesheet" href="css/icomoon.css">
+<!-- Bootstrap  -->
+<link rel="stylesheet" href="css/bootstrap.css">
+<!-- Theme style  -->
+<link rel="stylesheet" href="css/bootstrapmin.css">
+
+<!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Main -->	
+	<script src="js/main.js"></script>
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
+	
+	<!-- include firebase database -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<input type="button" value="대기실" onclick="gotoroomlist()">
+<input type="button" value="준비" onclick="alert(0)">
+<input type="button" value="리스트 보기" onclick="alert(0)">
+&emsp;&emsp;
+<input type="button" value="게임 시작" onclick="gamestart();">
+<input type="button" value="방 설정 변경" onclick="makeroom_roomsetting()">
+
+<br><br>
+<font id="gameroom-title">방제:초보</font>
+<br><br>
+<font id="gameroom-quiztype">문제 유형:자연</font>
+<br><br>
+<font id="gameroom-quizdescript">문제 내용:사과의 색깔은?</font>
+
+<br><br>
+<div id="chatroom" style="overflow:auto;width:200px;height:150px;background-color:#fffb85;">
+	<font id="chatcontent"></font>
+</div>
+
+<br><br>
+<font style="color:black;" id="gameroom-useranswer" value="345"></font>
+
+<br><br>
+<input type="text" id="useranswer-textbox" onkeyup="enterkey();">
+<input type="button" onclick="useranswertrying();" value="전송">
+
+ <!-- Modal -->
+   <!-- 방만들기 설정값 -->
+  <div  class="modal fade" id="roomSetting" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div style="width:400px;" class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h3 style="font-weight: bold;text-align:center;" class="modal-title">방 설정</h3>
+        </div>
+        <div class="modal-body">
+          
+				제목 <input id="roomname" type="text" value="">
+				
+				<br><br>
+				게임 인원 &nbsp;<select name="job">
+				<option value=""> 선택</option>
+				<option value=""> 1</option>
+				<option value=""> 2</option>
+				<option value=""> 3</option>
+				</select>
+				
+				<br><br>
+				<input type="radio" name="group" checked="">개인전
+				<input type="radio" name="group">팀전
+				
+				<br><br>
+				
+				<input type="checkbox" name="chk_info" value="HTML">잠금설정 
+				<input type="text" value=""  placeholder="Enter password...">
+				
+				<br><br>
+        </div>
+        <div class="modal-footer">
+       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="makeroom_makeroom()">확인</button>
+          	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+ 
+<script>
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+
+
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyCqVORIxXazIGcKlIaGTKn4YgX8R6Kg5Os",
+    authDomain: "fir-chattutorial-5f637.firebaseapp.com",
+    databaseURL: "https://fir-chattutorial-5f637.firebaseio.com",
+    projectId: "firebasechattutorial",
+    storageBucket: "firebasechattutorial.appspot.com",
+    messagingSenderId: "1084417645508",
+    appId: "1:1084417645508:web:a86d313330cba20b0f2291"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  
+  var roomid;
+  
+  window.onload = function(){
+	  console.log(localStorage.getItem('roomid'));
+	  roomid = localStorage.getItem('roomid');
+	  
+	  firebase.database().ref("rooms/"+roomid+"/chatting").on("child_added",function(snapshot){
+		document.getElementById("chatcontent").innerHTML+=snapshot.val().chatcontent+"<br>";
+// 		  console.log(snapshot.val);
+
+		//스크롤바를 밑으로 내림
+		$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
+		
+	  });
+	  
+	  //방제 바꿔주는 리스너메서드 
+	  firebase.database().ref("rooms/"+roomid+"/roomName").on("child_added",function(snapshot){
+
+		  $('#gameroom-title').text("방제 : " +snapshot.val());
+		  
+	  });
+	  
+  }
+  
+  var arr= new Array();
+
+  //퀴즈장르를 가져와서 arr에 저장
+  firebase.database().ref("quizgenre").on("child_added",function(snapshot){
+	  	arr.push(snapshot.key);
+  });
+  
+  var testInterval,quiznansitem;
+  function gamestart() {
+
+	  var count=0;
+	  
+// 	  while(count<3){
+		var genreindex = parseInt(Math.random()*(arr.length));//퀴즈장르의 배열의 숫자중 랜덤으로 하나의 숫자를 가져옴
+	  	$('#gameroom-quiztype').text("문제 유형 : " +arr[genreindex]);//하나의 숫자로 장르의 이름을 가져옴
+		
+		var quiznans = new Array();
+		firebase.database().ref("quizgenre/"+arr[genreindex]).on("child_added",function(snapshot){
+			quiznans.push(snapshot.val());
+	 	});
+		
+		var quizindex = parseInt(Math.random()*(quiznans.length));
+		quiznansitem = quiznans[quizindex];
+		$('#gameroom-quizdescript').text("문제 내용 : " +quiznansitem.quiz);
+		
+		var intval = 7;
+		
+		erasetochat();
+		pushtochat("");
+		pushtochat("[[[게임 시작]]]");
+		pushtochat("");
+		
+		testInterval = setInterval(function() {
+			intval--;
+			if(intval<=5&&intval!=0){
+				pushtochat(intval+"초 남았습니다");
+			}
+			if(intval<=0){
+				pushtochat("정답은 「"+quiznansitem.answer+"」 입니다");
+				clearTimeout(testInterval);
+			}
+			
+        },1000);
+		
+// 		count++;
+// 	  }
+// 		testInterval=null,quiznans=null;
+	}
+  
+</script>
+
+
+<script>
+
+function pushtochat(txt){
+	document.getElementById("chatcontent").innerHTML+=txt+"<br>";
+	$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
+}
+
+function enterkey() {
+    if (window.event.keyCode == 13) {
+
+    	useranswertrying();
+    }
+}
+function erasetochat(){
+	document.getElementById("chatcontent").innerHTML="";
+}
+
+
+function useranswertrying(){
+	// 엔터키가 눌렸을 때 실행할 내용
+	var useranswer = $('#useranswer-textbox').val();
+	$('#useranswer-textbox').val('');
+	
+	$('#gameroom-useranswer').finish();//css속성,애니메이션을 삭제하는 메서드
+	$('#gameroom-useranswer').text(useranswer);
+	$('#gameroom-useranswer').fadeIn();
+	setTimeout(function() {
+		$('#gameroom-useranswer').fadeOut( 1500, 'swing' );
+    },700);
+	
+	if(useranswer==quiznansitem.answer&&testInterval!=null){
+		
+// 	if(true){	
+		clearTimeout(testInterval);
+		pushtochat("");
+		pushtochat("[[[정답입니다!!]]]");
+		pushtochat("");
+	}
+	
+// 	useranswer = "<font style=\"width:100%;\">"+useranswer+"</font><br>"
+	
+// 	document.getElementById("chatcontent").innerHTML+=useranswer+"<br>";
+     
+    
+    
+	//save in database
+	firebase.database().ref("rooms/"+roomid+"/chatting").push().set({
+		"chatcontent":useranswer 
+	});
+    
+	
+}
+
+function gotoroomlist(){
+	location.href="comsense-gameroomlist.html";
+}
+
+
+</script>
+
+<script>
+// <<<<<<<<<<<<		modal	<<<<<<<<<<<<<<<<<
+	function makeroom_roomsetting(){
+		 $("#roomSetting").modal();
+	}
+</script>
+
+</body>
+</html>

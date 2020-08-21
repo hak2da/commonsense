@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="css/animate.css">
+<!-- Icomoon Icon Fonts-->
+<link rel="stylesheet" href="css/icomoon.css">
+<!-- Bootstrap  -->
+<link rel="stylesheet" href="css/bootstrap.css">
+
+
+<!-- Theme style  -->
+<link rel="stylesheet" href="css/bootstrapmin.css">
+
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<input type="button" value="빠른시작" onclick="quickstart();">
+<input type="button" value="방만들기" onclick="makeroom_roomsetting();">
+<input type="button" value="랭킹 보기" onclick="alert(0);">
+&emsp;
+<input type="button" value="문제 입력하기" onclick="submitquiz();">
+
+   <!-- Modal -->
+   <!-- 방만들기 설정값 -->
+  <div  class="modal fade" id="roomSetting" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div style="width:400px;" class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h3 style="font-weight: bold;text-align:center;" class="modal-title">방 설정</h3>
+        </div>
+        <div class="modal-body">
+          
+				제목 <input id="roomname" type="text" value="">
+				
+				<br><br>
+				게임 인원 &nbsp;<select name="job">
+				<option value=""> 선택</option>
+				<option value=""> 1</option>
+				<option value=""> 2</option>
+				<option value=""> 3</option>
+				</select>
+				
+				<br><br>
+				<input type="radio" name="group" checked="">개인전
+				<input type="radio" name="group">팀전
+				
+				<br><br>
+				
+				<input type="checkbox" name="chk_info" value="HTML">잠금설정 
+				<input type="text" value=""  placeholder="Enter password...">
+				
+				<br><br>
+        </div>
+        <div class="modal-footer">
+       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="makeroom_makeroom()">확인</button>
+          	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <!-- 빠른시작 -->
+  <div  class="modal fade" id="QuickStart" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div style="width:400px;" class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h3 style="font-weight: bold;text-align:center;" class="modal-title">게임 찾는중..</h3>
+        </div>
+        <div class="modal-body" style="text-align:center;">
+          	
+			<font id="quickstartnum" style="color:blue;font-weight:bold;font-size:30px;">1</font>
+				
+			
+        </div>
+        <div class="modal-footer">
+          	<button type="button" class="btn btn-default" data-dismiss="modal" onclick="quickstartcancel()">취소</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
+  <br><br>
+  <!-- create a list -->
+<ul id="messages"></ul>
+  
+    <!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Main -->	
+	<script src="js/main.js"></script>
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
+	
+	<!-- include firebase database -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+  
+
+<script>
+
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyCqVORIxXazIGcKlIaGTKn4YgX8R6Kg5Os",
+    authDomain: "fir-chattutorial-5f637.firebaseapp.com",
+    databaseURL: "https://fir-chattutorial-5f637.firebaseio.com",
+    projectId: "firebasechattutorial",
+    storageBucket: "firebasechattutorial.appspot.com",
+    messagingSenderId: "1084417645508",
+    appId: "1:1084417645508:web:a86d313330cba20b0f2291"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+//listen for incoming messages
+  firebase.database().ref("rooms").on("child_added",function(snapshot){
+	 
+	 var html="";
+	 // give each message a unique ID
+	 var roomId = String(snapshot.key);
+
+// 	 html +="<li data-id='"+snapshot.key+"' id='message-"+ snapshot.key+"'>";
+	 html +="<li id='message-"+ snapshot.key+"'>";
+	 html +=snapshot.val().roomName;
+	 html +="&nbsp&nbsp<input type='button' onclick=\"movetogameroom('"+roomId+"');\" value='방 입장'>";
+	 html +="&nbsp&nbsp<input type='button' data-id='"+roomId+"' onclick='deleteMessage(this);' value='방 삭제'>";
+	 
+	 
+	 //show delete button if message is sent by me
+// 	 if(snapshot.val().sender == myName){
+// 		 html += "<button data-id='"+snapshot.key+"' onclick='deleteMessage(this);'>";
+// 		 html += "Delete";
+// 		 html += "</button>";
+// 	 }
+	 
+	 html +="</li>";
+	 
+	 document.getElementById("messages").innerHTML += html;
+	 
+  });
+  
+//attach listener for delete message
+  firebase.database().ref("rooms").on("child_removed", function (snapshot){
+	 // remove message node
+	 document.getElementById("message-"+snapshot.key).innerHTML = "THIS room has been deleted";
+// 	 document.getElementById("message-"+snapshot.key).innerHTML = "";
+  });
+  
+  function deleteMessage(self){
+	  
+	  //get message ID
+	  var messageId = self.getAttribute("data-id");
+	  
+	  //delete message
+	  firebase.database().ref("rooms").child(messageId).remove();
+	  
+  }
+  
+  function makeroom_makeroom(){
+	  
+	var roomName = document.getElementById("roomname").value;
+	
+	if(roomName==null||roomName==""){
+		roomName="tmp";
+	}
+  
+	//save in database
+	
+	firebase.database().ref("rooms").push().set({
+		"roomName":roomName
+	});
+  }
+  
+  
+
+</script>
+
+
+<script>
+//<<<<<<<<<<<<		jvvaa script	<<<<<<<<<<<<<<<<<
+function movetogameroom(roomid){
+	  
+	  localStorage.setItem('roomid', roomid);
+	  location.href="comsense-gameroomingame.html";	  
+  }
+  
+function submitquiz(){
+	if(prompt("password")=="123"){
+		location.href="comsense-submitquiz.html";	
+	} 
+  
+}
+  
+</script>
+
+<script>
+// <<<<<<<<<<<<		modal	<<<<<<<<<<<<<<<<<
+	function makeroom_roomsetting(){
+		 $("#roomSetting").modal();
+	}
+	
+	var quickstartInterval;
+	function quickstart(){
+		 $("#QuickStart").modal();
+		
+		 var num=1;
+		 document.getElementById("quickstartnum").innerHTML=num;
+		 quickstartInterval = setInterval(function() {
+			 
+			document.getElementById("quickstartnum").innerHTML=++num;
+             
+         },1000);
+
+//          setTimeout(function() {
+//              clearTimeout(testInterval);
+//          },2000);
+
+	}
+	
+	function quickstartcancel(){
+		clearTimeout(quickstartInterval);
+	}
+
+	
+</script>
+
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="css/animate.css">
+<!-- Icomoon Icon Fonts-->
+<link rel="stylesheet" href="css/icomoon.css">
+<!-- Bootstrap  -->
+<link rel="stylesheet" href="css/bootstrap.css">
+
+
+<!-- Theme style  -->
+<link rel="stylesheet" href="css/bootstrapmin.css">
+
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+
+<input type="button" value="대기실로 돌아가기" onclick="gotoroomlist();">
+  
+<br><br>
+
+<a href="https://blog.naver.com/daum1313/220050440091" about="_blank">blog</a><br>
+
+<textarea id="textarea1" style="width:40%; left:10%; display:inline-block;" rows="15" cols="30" name="contents" placeholder="퀴즈를 적어주세요"></textarea>
+<br><br>
+  
+<input type="button" value="문제제출하기" onclick="submitgangbogiquiz();">
+  
+    <!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Main -->	
+	<script src="js/main.js"></script>
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
+	
+	<!-- include firebase database -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+  
+
+<script>
+
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyCqVORIxXazIGcKlIaGTKn4YgX8R6Kg5Os",
+    authDomain: "fir-chattutorial-5f637.firebaseapp.com",
+    databaseURL: "https://fir-chattutorial-5f637.firebaseio.com",
+    projectId: "firebasechattutorial",
+    storageBucket: "firebasechattutorial.appspot.com",
+    messagingSenderId: "1084417645508",
+    appId: "1:1084417645508:web:a86d313330cba20b0f2291"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+  
+function submitgangbogiquiz(){
+	
+	var text =  document.getElementById("textarea1").value;
+	var arr = text.split("\n \n");//전체 문장을 문제 단위로 자름
+	
+	
+	
+	for (var i = 0; i < arr.length; i++) {
+		var arritem = arr[i].split("\n");//문제를 문장 단위로 자름
+		
+// 		console.log("arritem",arritem);
+		var genre=null,quiz=null,answer=null;
+		
+		for (var i2 = 0; i2 < arritem.length; i2++) {
+			if(arritem[i2].indexOf("장르")!=-1){
+				genre = arritem[i2];
+			}else if(arritem[i2].indexOf("문제")!=-1){
+				quiz = arritem[i2];	
+			}else if(arritem[i2].indexOf("정답")!=-1){
+				answer = arritem[i2];	
+			}
+		}
+		
+		if(genre!=null && quiz!=null && answer!=null){
+			
+			genre = genre.substring(genre.indexOf("장르")).replace('장르','').replace(':','').replace(/\//gi, "&").trim();
+			quiz = quiz.substring(quiz.indexOf("문제")).replace('문제','').replace(':','').trim();
+			answer = answer.substring(answer.indexOf("정답")).replace('정답','').replace(':','').trim();
+			
+			putintorealdb(genre,quiz,answer);
+		}
+	}
+
+// 	  location.href="comsense-gameroomlist.html";
+}
+function putintorealdb(genre,quiz,answer){
+	var arr = new Array();
+	firebase.database().ref("quizgenre/"+genre).on("child_added",function(snapshot){
+		arr.push(snapshot.val().quiz);
+	});
+	
+	var chk = false;
+	for (var i = 0; i < arr.length; i++) {
+		if(arr[i]==quiz) {
+			chk=true; //중복된값이 있다면 체크값 트루 반환
+			break;
+		}
+	}
+			
+	
+	if(!chk){//중복된값이 없을때 데이터 넣기 가능
+		firebase.database().ref("quizgenre/"+genre).push().set({
+			"quiz":quiz,
+			"answer":answer
+		});	
+	}
+	
+}
+
+
+</script>
+
+
+<script>
+//<<<<<<<<<<<<		jvvaa script	<<<<<<<<<<<<<<<<<
+function replaceAll(str, searchStr, replaceStr) {
+
+   return str.split(searchStr).join(replaceStr);
+}
+
+
+
+
+function gotoroomlist(){
+	  location.href="comsense-gameroomlist.html";
+}
+
+
+
+
+  
+</script>
+
+<script>
+// <<<<<<<<<<<<		modal	<<<<<<<<<<<<<<<<<
+
+	
+</script>
+
+
+</body>
+</html>
