@@ -73,8 +73,6 @@ function submitgangbogiquiz(){
 	var text =  document.getElementById("textarea1").value;
 	var arr = text.split("\n \n");//전체 문장을 문제 단위로 자름
 	
-	
-	
 	for (var i = 0; i < arr.length; i++) {
 		var arritem = arr[i].split("\n");//문제를 문장 단위로 자름
 		
@@ -100,18 +98,39 @@ function submitgangbogiquiz(){
 			putintorealdb(genre,quiz,answer);
 		}
 	}
+	
+	if(reduntcount>0){
+		alert("중복된 데이터 "+reduntcount+"개 빼고 "+(arr.length-reduntcount)+"개 입력");
+	}else{
+		alert(arr.length+"개 입력");
+	}
+	reduntcount=0;
 
 // 	  location.href="comsense-gameroomlist.html";
 }
-function putintorealdb(genre,quiz,answer){
-	var arr = new Array();
-	firebase.database().ref("quizgenre/"+genre).on("child_added",function(snapshot){
-		arr.push(snapshot.val().quiz);
+
+
+var quiznans_arr = new Array();		//질문을 저장할 배열
+var quiznans_genrearr = new Array();//장르를 저장할 배열
+
+// firebase.database().ref("quizgenre/"+genre).on("child_added",function(snapshot){
+firebase.database().ref("quizgenre").on("child_added",function(snapshot){
+	
+	quiznans_genrearr.push(snapshot.key);
+	
+	firebase.database().ref("quizgenre/"+snapshot.key).on("child_added",function(snapshot){
+		quiznans_arr.push(snapshot.val().quiz);	
 	});
 	
+});
+console.log(quiznans_arr,quiznans_genrearr);
+
+var reduntcount=0;
+function putintorealdb(genre,quiz,answer){
+	
 	var chk = false;
-	for (var i = 0; i < arr.length; i++) {
-		if(arr[i]==quiz) {
+	for (var i = 0; i < quiznans_arr.length; i++) {
+		if(quiznans_arr[i]==quiz) {
 			chk=true; //중복된값이 있다면 체크값 트루 반환
 			break;
 		}
@@ -119,10 +138,30 @@ function putintorealdb(genre,quiz,answer){
 			
 	
 	if(!chk){//중복된값이 없을때 데이터 넣기 가능
+		
+		
+		//조건 1. DMZ,dmz 대문자,소문자 조건  -->대문자로 치환할것
+		//조건 2. '제갈공명' '제갈 공명'같은 띄워쓰기 조건 -->띄워쓰기는 모두 지울것
+		//조건 3. 정답이 제갈량(제갈공명)같은 BRACE 조건 --> 배열로 두가지 이상의 정답일경우 계산할것
+		//문제를 맞출시에는 원래정답을 보여주고 문제 정답시도시에는 배열조건 정답으로 정답을 확인함
+		
+		var answer_calc = answer;
+		//공백제거 대문자로 치환
+		answer_calc = answer_calc.toUpperCase().replace(/ /g,"");
+		
+		while(answer_calc.indexOf('(')!=-1||answer_calc.indexOf(')')!=-1){
+			answer_calc = answer_calc.replace('(',',').replace(')','');
+		}
+		var ac_array = new Array();
+		ac_array = answer_calc.split(",");
+		
 		firebase.database().ref("quizgenre/"+genre).push().set({
 			"quiz":quiz,
-			"answer":answer
+			"answer_orig":answer,
+			"answer_array":ac_array 
 		});	
+	}else{
+		reduntcount++;
 	}
 	
 }
