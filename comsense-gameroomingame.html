@@ -33,7 +33,7 @@
 <body>
 
 <input type="button" value="대기실" onclick="gotoroomlist()">
-<input type="button" value="준비" onclick="alert(0)">
+<input type="button" id="usrready_button" value="준비" onclick="user_ready()">
 <input type="button" value="리스트 보기" onclick="alert(0)">
 &emsp;&emsp;
 <input type="button" value="게임 시작" onclick="gamestart(3);">
@@ -47,8 +47,12 @@
 <font id="gameroom-quizdescript">문제 내용:사과의 색깔은?</font>
 
 <br><br>
-<div id="chatroom" style="overflow:auto;width:200px;height:150px;background-color:#fffb85;">
+<div id="chatroom" style="float:left;overflow:auto; width:200px;height:150px;margin-right:10px;background-color:#fffb85;">
 	<font id="chatcontent"></font>
+</div>
+
+<div id="ingame_userlistdiv" style="overflow:auto; width:200px; height:150px;  background-color:#9dfaff;">
+	<font id="ingame_userlist"></font>
 </div>
 
 <br><br>
@@ -138,8 +142,74 @@
 		  $('#gameroom-title').text("방제 : " +snapshot.val());
 	  });
 	  
+
+	  var uid = localStorage.getItem('userid');
+	  var user_nick = localStorage.getItem('usernick');
+
+	  // Create a reference to this user's specific status node.
+	  // This is where we will store data about being online/offline.
+	  
+	  var userstatusRef = firebase.database().ref('/rooms/' + roomid+'/users').push({});
+	  localStorage.setItem("userstatusRef_key",	userstatusRef.key);
+
+	  var userStatusDatabaseRef = firebase.database().ref('/rooms/' + roomid+'/users/'+userstatusRef.key);
+
+	  // We'll create two constants which we will write to 
+	  // the Realtime database when this device is offline
+	  // or online.
+	  var isOfflineForDatabase = {
+
+// 	      state: 'offline',
+// 	      user_id : uid,
+// 	      user_nick : user_nick,
+	  };
+
+	  var isOnlineForDatabase = {
+	      state: 'online',
+	      ready: false,
+	      user_id : uid,
+	      user_nick : user_nick,
+	  };
+
+	  // Create a reference to the special '.info/connected' path in 
+	  // Realtime Database. This path returns `true` when connected
+	  // and `false` when disconnected.
+	  firebase.database().ref('.info/connected').on('value', function(snapshot) {
+	      // If we're not currently connected, don't do anything.
+	      if (snapshot.val() == false) {
+	          return;
+	      };
+
+	      // If we are currently connected, then use the 'onDisconnect()' 
+	      // method to add a set which will only trigger once this 
+	      // client has disconnected by closing the app, 
+	      // losing internet, or any other means.
+
+	  	userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
+	          // The promise returned from .onDisconnect().set() will
+	          // resolve as soon as the server acknowledges the onDisconnect() 
+	          // request, NOT once we've actually disconnected:
+	          // https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect
+
+	          // We can now safely set ourselves as 'online' knowing that the
+	          // server will mark us as offline once we lose connection.
+	          var statusRef = userStatusDatabaseRef.set(isOnlineForDatabase);
+// 	          localStorage.setItem('userstatus_key',statusRef.key);
+	      });
+	  });
+	  // [END rtdb_presence]
+	  
+	  firebase.database().ref('/rooms/' + roomid+'/users/').on("value",function(snapshot){
+		erasetouserlist();
+	  	var userlist = snapshot.val();
+	  	for(key in userlist){
+			var user = 	userlist[key];
+			pushtouserlist(user.user_nick+' / '+user.ready);
+	  	}
+	  });	  
+	  
+  //window.onload end
   }
-  
   
   var quizgenre_arr= new Array();
 
@@ -190,7 +260,29 @@
 
 	}
   
-  function gameend(gamecount,roomid){
+  	var user_readybool = false;
+  	
+	function user_ready(){
+		if(!user_readybool){
+			$('#usrready_button').val('준비취소');			
+			user_readybool = true;
+			setuserreadystatus(true);
+		}else{
+			$('#usrready_button').val('준비');						
+			user_readybool = false;
+			setuserreadystatus(false);
+		}
+
+	}
+	
+	function setuserreadystatus(readybool){
+		var userstatus_key = localStorage.getItem('userstatusRef_key');
+		firebase.database().ref('/rooms/'+roomid+'/users/'+userstatus_key).update({
+			ready : readybool
+		});
+	}
+  
+	 function gameend(gamecount,roomid){
 	  quiznansitem=null;
 	  if(gamecount>=0){
 		  setTimeout(function() {
@@ -201,17 +293,14 @@
 	  //채팅 데이터 지움
 	  firebase.database().ref("rooms/"+roomid+"/chatting").remove();
 	  
-  }
+	 }
+  
+  
   
 </script>
 
 
 <script>
-
-function pushtochat(txt){
-	document.getElementById("chatcontent").innerHTML+=txt+"<br>";
-	$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
-}
 
 function enterkey() {
     if (window.event.keyCode == 13) {
@@ -219,8 +308,24 @@ function enterkey() {
     	useranswertrying();
     }
 }
+
+function pushtochat(txt){
+	document.getElementById("chatcontent").innerHTML+=txt+"<br>";
+	$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
+}
+
+
 function erasetochat(){
 	document.getElementById("chatcontent").innerHTML="";
+}
+
+function pushtouserlist(txt){
+	document.getElementById("ingame_userlist").innerHTML+=txt+"<br>";
+	$("#ingame_userlist").scrollTop($("#ingame_userlist")[0].scrollHeight);
+}
+
+function erasetouserlist(){
+	document.getElementById("ingame_userlist").innerHTML="";
 }
 
 function useranswertrying(){
