@@ -124,14 +124,16 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   
-  var roomid;
+  //gamehost:방장
+  var roomid,userid,user_nick,gamestatus=false,gamehost=false;
   
   window.onload = function(){
 	  console.log(localStorage.getItem('roomid'));
 	  roomid = localStorage.getItem('roomid');
 	  
 	  firebase.database().ref("rooms/"+roomid+"/chatting").on("child_added",function(snapshot){
-		document.getElementById("chatcontent").innerHTML+=snapshot.val().chatcontent+"<br>";
+		var chat= snapshot.val().chat_user_nick+" : "+snapshot.val().chatcontent;
+		pushtochat(chat);
 
 		//스크롤바를 밑으로 내림
 		$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
@@ -143,8 +145,8 @@
 	  });
 	  
 
-	  var uid = localStorage.getItem('userid');
-	  var user_nick = localStorage.getItem('usernick');
+	  userid = localStorage.getItem('userid');
+	  user_nick = localStorage.getItem('usernick');
 
 	  // Create a reference to this user's specific status node.
 	  // This is where we will store data about being online/offline.
@@ -167,9 +169,12 @@
 	  var isOnlineForDatabase = {
 	      state: 'online',
 	      ready: false,
-	      user_id : uid,
+	      user_id : userid,
 	      user_nick : user_nick,
-	  };
+	  } ;
+	  var tech = (function(){
+		  return 1;
+	  });
 
 	  // Create a reference to the special '.info/connected' path in 
 	  // Realtime Database. This path returns `true` when connected
@@ -204,7 +209,7 @@
 	  	var userlist = snapshot.val();
 	  	for(key in userlist){
 			var user = 	userlist[key];
-			pushtouserlist(user.user_nick+' / '+user.ready);
+			pushtouserlist(user.user_nick+' / '+ (user.ready ? '준비완료':'대기중'));
 	  	}
 	  });	  
 	  
@@ -221,6 +226,9 @@
   var testInterval,quiznansitem,gbgamecount=0;
   
   function gamestart(gamecount) {
+// 	  if(!gamehost){//게임방장이 아니면 메서드 실행안됨
+// 		  return;
+// 	  }
 	  gbgamecount=gamecount;
 	  gbgamecount--;
 	  
@@ -256,9 +264,13 @@
 				gameend(gbgamecount,roomid);
 			}
 			
-		      },1000);
+	      },1000);
 
 	}
+  
+//   function gamestart(){
+// 	  alert(0);
+//   }
   
   	var user_readybool = false;
   	
@@ -295,10 +307,7 @@
 	  
 	 }
   
-  
-  
 </script>
-
 
 <script>
 
@@ -310,10 +319,9 @@ function enterkey() {
 }
 
 function pushtochat(txt){
-	document.getElementById("chatcontent").innerHTML+=txt+"<br>";
+	document.getElementById("chatcontent").innerHTML+='<span>'+txt+'</span><br>';
 	$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
 }
-
 
 function erasetochat(){
 	document.getElementById("chatcontent").innerHTML="";
@@ -332,6 +340,9 @@ function useranswertrying(){
 	// 엔터키가 눌렸을 때 실행할 내용
 	
 	var useranswer = $('#useranswer-textbox').val();
+	if(useranswer.trim()==''){
+		return;
+	}
 	$('#useranswer-textbox').val('');
 	
 	$('#gameroom-useranswer').finish();//css속성,애니메이션을 삭제하는 메서드
@@ -365,7 +376,9 @@ function useranswertrying(){
     
 	//save in database
 	firebase.database().ref("rooms/"+roomid+"/chatting").push().set({
-		"chatcontent":useranswer 
+		"chatcontent":useranswer,
+		"chat_user_nick" : user_nick,
+		"chat_user_id" : userid
 	});
 	
 }
