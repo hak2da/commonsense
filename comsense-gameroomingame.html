@@ -26,6 +26,11 @@
 	
 	<!-- include firebase database -->
 	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+	
+	
+	<!-- include commonsense gameroomingame javascript -->
+	<script src="js/gameroomingame/anonymous_User.js"></script>
+	
 
 <meta charset="UTF-8">
 <title>Insert title here</title>
@@ -36,7 +41,7 @@
 <input type="button" id="usrready_button" value="준비" onclick="user_ready()">
 <input type="button" value="리스트 보기" onclick="alert(0)">
 &emsp;&emsp;
-<input type="button" value="게임 시작" onclick="gamestart(3);">
+<input type="button" value="게임 시작" onclick="gamestart2();">
 <input type="button" value="방 설정 변경" onclick="makeroom_roomsetting()">
 
 <br><br>
@@ -97,7 +102,7 @@
 				<br><br>
         </div>
         <div class="modal-footer">
-       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="makeroom_makeroom()">확인</button>
+       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="room_setting()">확인</button>
           	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
         </div>
       </div>
@@ -106,6 +111,7 @@
   </div>
  
 <script>
+'use strict';
 //<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
 //<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
 //<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
@@ -118,6 +124,7 @@
     databaseURL: "https://fir-chattutorial-5f637.firebaseio.com",
     projectId: "firebasechattutorial",
     storageBucket: "firebasechattutorial.appspot.com",
+    
     messagingSenderId: "1084417645508",
     appId: "1:1084417645508:web:a86d313330cba20b0f2291"
   };
@@ -125,11 +132,25 @@
   firebase.initializeApp(firebaseConfig);
   
   //gamehost:방장
-  var roomid,userid,user_nick,gamestatus=false,gamehost=false;
+  var roomid,userid,user_nick,gamestatus=false,gamehost=false,gamehostid;
+  var userlist;
+  var userreadycount;
+  var userStatusDatabaseRef;
+  var userstatusRef;//게임룸에 데이터넣을때 user key값
   
   window.onload = function(){
 	  console.log(localStorage.getItem('roomid'));
+	  
 	  roomid = localStorage.getItem('roomid');
+	  userid = localStorage.getItem('userid');
+	  user_nick = localStorage.getItem('usernick');
+	  //인게임에 들어갈때 기본적으로 접속해있는 유저 정보,방정보를 가져옴 
+	  //만약에 위의 정보중 하나라도 없으면 대기실로 리턴
+	  
+	  if(roomid==null||userid==null||user_nick==null){
+		 alert("사용자 데이터가 없습니다.");
+		 location.href="comsense-gameroomlist.html";
+	  }
 	  
 	  firebase.database().ref("rooms/"+roomid+"/chatting").on("child_added",function(snapshot){
 		var chat= snapshot.val().chat_user_nick+" : "+snapshot.val().chatcontent;
@@ -140,81 +161,179 @@
 	  });
 	  
 	  //방제 바꿔주는 리스너메서드 
-	  firebase.database().ref("rooms/"+roomid+"/roomName").on("value",function(snapshot){
-		  $('#gameroom-title').text("방제 : " +snapshot.val());
+	  firebase.database().ref("rooms/"+roomid+"/setting/gamehostid").on("value",function(snapshot){
+		  gamehost = snapshot.val() == userid ? true : false;
+		  gamehostid=snapshot.val();
 	  });
 	  
-
-	  userid = localStorage.getItem('userid');
-	  user_nick = localStorage.getItem('usernick');
+	//방제 바꿔주는 리스너메서드 
+	 firebase.database().ref("rooms/"+roomid+"/roomName").on("value",function(snapshot){
+		  $('#gameroom-title').text("방제 : " +snapshot.val());
+		  
+		  //모달창의 방제 이름
+		  $('#roomname').val(snapshot.val());
+	  });
+	  
 
 	  // Create a reference to this user's specific status node.
 	  // This is where we will store data about being online/offline.
 	  
-	  var userstatusRef = firebase.database().ref('/rooms/' + roomid+'/users').push({});
+	  userstatusRef = firebase.database().ref('/rooms/' + roomid+'/users').push({});
 	  localStorage.setItem("userstatusRef_key",	userstatusRef.key);
 
-	  var userStatusDatabaseRef = firebase.database().ref('/rooms/' + roomid+'/users/'+userstatusRef.key);
+	  userStatusDatabaseRef = firebase.database().ref('/rooms/' + roomid+'/users/'+userstatusRef.key);
 
-	  // We'll create two constants which we will write to 
-	  // the Realtime database when this device is offline
-	  // or online.
 	  var isOfflineForDatabase = {
-
-// 	      state: 'offline',
-// 	      user_id : uid,
+// 		  status: 'member',
+// 	      ready: false,
+// 	      user_id : userid,
 // 	      user_nick : user_nick,
+// 	      connect_time: firebase.database.ServerValue.TIMESTAMP
 	  };
-
+	  
 	  var isOnlineForDatabase = {
-	      state: 'online',
+	      status: 'member',
 	      ready: false,
 	      user_id : userid,
 	      user_nick : user_nick,
-	  } ;
-	  var tech = (function(){
-		  return 1;
-	  });
+	      connect_time: firebase.database.ServerValue.TIMESTAMP
+	  };
 
-	  // Create a reference to the special '.info/connected' path in 
-	  // Realtime Database. This path returns `true` when connected
-	  // and `false` when disconnected.
 	  firebase.database().ref('.info/connected').on('value', function(snapshot) {
 	      // If we're not currently connected, don't do anything.
 	      if (snapshot.val() == false) {
 	          return;
 	      };
-
-	      // If we are currently connected, then use the 'onDisconnect()' 
-	      // method to add a set which will only trigger once this 
-	      // client has disconnected by closing the app, 
-	      // losing internet, or any other means.
-
+		
+		
 	  	userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
-	          // The promise returned from .onDisconnect().set() will
-	          // resolve as soon as the server acknowledges the onDisconnect() 
-	          // request, NOT once we've actually disconnected:
-	          // https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect
 
-	          // We can now safely set ourselves as 'online' knowing that the
-	          // server will mark us as offline once we lose connection.
 	          var statusRef = userStatusDatabaseRef.set(isOnlineForDatabase);
-// 	          localStorage.setItem('userstatus_key',statusRef.key);
 	      });
 	  });
 	  // [END rtdb_presence]
 	  
-	  firebase.database().ref('/rooms/' + roomid+'/users/').on("value",function(snapshot){
+	  //ingame user handler
+	  firebase.database().ref('/rooms/'+roomid+'/users').on("value",function(snapshot){
 		erasetouserlist();
-	  	var userlist = snapshot.val();
-	  	for(key in userlist){
+	  	userlist = snapshot.val();
+	  	userreadycount=0;
+	  	
+	  	var gamehost_exist=false;
+	  	
+		for(var key in userlist){
 			var user = 	userlist[key];
-			pushtouserlist(user.user_nick+' / '+ (user.ready ? '준비완료':'대기중'));
+			
+			user.ready ? userreadycount++ : 0;
+			
+			console.log("gamehostid,user.user_id",gamehostid,user.user_id,gamehostid==user.user_id);
+			if(gamehostid!=null && user.user_id==gamehostid){//만약 userlist의 status가 host면 그대로 표시
+				pushtouserlist(user.user_nick+' / 방장');
+				gamehost_exist=true;
+
+			}else{
+				pushtouserlist(user.user_nick+' / '+ (user.ready ? '준비완료':'대기중'));	
+			}
+			
+	  	};
+	  	
+	  	if(userlist!=null){
+	  		gamehost_manager(userlist,gamehost_exist);
 	  	}
-	  });	  
+	  	
+	  }); 
 	  
   //window.onload end
   }
+  
+  async function gamehost_manager(userlist,gamehost_exist){
+	  var roomhost;
+
+	  //user 대기목록 나혼자일때
+	  if(Object.keys(userlist).length==1&&!gamehost_exist){
+		  
+	  	var myroomuserdata;
+	  	await getmyroomuserdata().then(result=> myroomuserdata = result);		
+		
+		if(myroomuserdata!=null && myroomuserdata.status=='member'){
+			
+			setTimeout(async function(){
+				var local_userlist;
+				
+				await getuserlist().then(result => local_userlist = result); //settimeout의 시간이 지난뒤 userlist를 가져옴
+				
+				//1인혼자 남은 인원의 id랑 setting의 gamehost의 id가 같지 않다면 setting의 gamehostid를 1인의 id로 수정			
+				await getmyroomuserdata().then(result=> myroomuserdata = result);	
+			
+				if(local_userlist!=null && Object.keys(local_userlist).length==1 && myroomuserdata.status=='member'){
+					console.log("host changed");
+				
+					firebase.database().ref('rooms/'+roomid+'/setting').update({
+						gamehostid : userid
+				  	});		
+					
+					firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+						status : "host"
+				  	});
+					
+				}
+			},1500);
+		}
+		
+		// rooms에  hostid가 있고 
+		// member중에 host인 사람의 id가 있는데 
+		// host value가 아닐때 hostvalue로 바꿔줌
+	  }else if(!gamehost_exist){
+		  var hostid;
+		  await gethostid().then(result => hostid = result);
+		  if(userid==hostid){
+			firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+				status : "host"
+			});
+		  }
+	  }else{
+		  console.log("else");
+	  }
+				
+	  
+  }
+	  
+  async function getmyroomuserdata(){
+		var value;  
+
+		await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).once('value').then(function(snapshot){
+			value = snapshot.val();
+		});
+		return value;
+	}
+  
+  async function gethostid(){
+	    
+	  	var value;
+	 	await firebase.database().ref('/rooms/' + roomid+'/setting/gamehostid').once('value').then(function(snapshot){
+				value =snapshot.val();
+		});
+	 	return value;
+		  
+  }
+  
+  async function getuserlist(){
+	  var value;	
+	  await firebase.database().ref('/rooms/' + roomid+'/users').once('value').then(function(snapshot){
+			value= snapshot.val();
+		});
+	  return value;
+  }
+  
+  function hello1(){
+		var value;  
+
+		firebase.database().ref('rooms').once('value').then(function(snapshot){
+			value = snapshot.val();
+		});
+		return  value;
+	}
+  
   
   var quizgenre_arr= new Array();
 
@@ -235,7 +354,7 @@
 	  var count=0;
 
 		var genreindex = parseInt(Math.random()*(quizgenre_arr.length));//퀴즈장르의 배열의 숫자중 랜덤으로 하나의 숫자를 가져옴
-		 	$('#gameroom-quiztype').text("문제 유형 : " +quizgenre_arr[genreindex]);//하나의 숫자로 장르의 이름을 가져옴
+	 	$('#gameroom-quiztype').text("문제 유형 : " +quizgenre_arr[genreindex]);//하나의 숫자로 장르의 이름을 가져옴
 		
 		var quiznans = new Array();
 		firebase.database().ref("quizgenre/"+quizgenre_arr[genreindex]).on("child_added",function(snapshot){
@@ -266,17 +385,93 @@
 			
 	      },1000);
 
-	}
+	}//gamestart end
   
-//   function gamestart(){
-// 	  alert(0);
-//   }
+  function gamestart2(){
+		
+	  if(Object.keys(userlist).length-1 == userreadycount){
+// 		  alert("게임을 시작합니다.");
+	  }else{
+		  alert("준비되지 않은 플레이어가 있습니다.");
+		  console.log("Object.keys(userlist).length = ",Object.keys(userlist).length);
+		  console.log("userreadycount = ",userreadycount);
+		  return;
+	  }
+	  
+	  firebase.database().ref('/rooms/'+roomid+'/ongame').update({
+			gamestatus : "start"
+	  });	
+	  
+  }
+	
+	var prevOnload_1 = window.onload;
+	window.onload = function(){
+		prevOnload_1();
+		firebase.database().ref('/rooms/'+roomid+'/ongame').on("value",function(snapshot){
+			 
+			  if(snapshot.val().gamestatus=="start"){
+				  erasetochat();
+				  pushtochat("게임이 시작되었습니다.");
+				  
+				  setTimeout(function(){
+					  firebase.database().ref('/rooms/'+roomid+'/ongame').update({
+							gamestatus : "newquiz"
+					  });		  
+				  },2000);//2초뒤에 새퀴즈시작
+				  
+			  }else if(snapshot.val()=="rightanswer"){
+				  pushtochat("정답입니다.");
+				  
+			  }else if(snapshot.val().gamestatus=="newquiz"){
+				  pushtochat("문제를 맞춰주세요.");
+				  pushtoquiz_toserver();
+				  
+			  }else if(snapshot.val()=="end"){
+				  pushtochat("게임이 끝났습니다.");
+				  
+			  }
+		  });
+		
+		firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').on("value",function(snapshot){
+
+			if(snapshot.val()!=null){
+				$('#gameroom-quiztype').text("장르 : "+snapshot.val().quizgenre);
+				$('#gameroom-quizdescript').text("문제 내용 : "+snapshot.val().quiz);
+			}
+		});
+	}
+	
+	function pushtoquiz_toserver(){
+		var genreindex = parseInt(Math.random()*(quizgenre_arr.length));//퀴즈장르의 배열의 숫자중 랜덤으로 하나의 숫자를 가져옴
+	 	
+	 	//하나의 숫자로 장르의 이름을 가져와서 데이터베이스에 삽입
+	 	firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').update({
+			quizgenre : quizgenre_arr[genreindex]
+	  	});
+	 	
+		
+		var quiznans = new Array();
+		firebase.database().ref("quizgenre/"+quizgenre_arr[genreindex]).on("child_added",function(snapshot){
+			quiznans.push(snapshot.val());
+		});
+		
+		var quizindex = parseInt(Math.random()*(quiznans.length));
+		quiznansitem = quiznans[quizindex];
+		
+		firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').update({
+			quiz : quiznansitem.quiz,
+			quizanswer_array : quiznansitem.answer_array,
+			quizanswer_orig : quiznansitem.answer_orig
+	  	});
+		
+	}
+
   
   	var user_readybool = false;
   	
 	function user_ready(){
 		if(!user_readybool){
-			$('#usrready_button').val('준비취소');			
+			$('#usrready_button').val('준비취소');
 			user_readybool = true;
 			setuserreadystatus(true);
 		}else{
@@ -306,6 +501,14 @@
 	  firebase.database().ref("rooms/"+roomid+"/chatting").remove();
 	  
 	 }
+	 
+	 function room_setting(){
+		 
+	 	firebase.database().ref("rooms/"+roomid).update({
+				"roomName":$('#roomname').val()
+		});
+	 }
+	 
   
 </script>
 
@@ -401,6 +604,14 @@ function sleep(ms) {
 	function makeroom_roomsetting(){
 		 $("#roomSetting").modal();
 	}
+	
+	// <<<<<<<<<<<<		reload alert	<<<<<<<<<<<<<<<<<
+	window.onbeforeunload = function(e) {
+	    var dialogText = 'Dialog text here';
+	    e.returnValue = dialogText;
+	    return dialogText;
+	};
+
 </script>
 
 </body>

@@ -149,7 +149,7 @@
 			ws_usernick = localStorage.getItem('usernick');
 			ws_userid = localStorage.getItem('userid');
 			
-			firebase.database().ref("users/anonymous/"+userid).on("value",function(snapshot){
+			firebase.database().ref("users/anonymous/"+ws_userid).on("value",function(snapshot){
 				$("#user_nickname").text(snapshot.val().user_nick);
 		  	});
 			
@@ -249,7 +249,6 @@
 		}
 		
 	}
-	
 	
 	
 </script>
