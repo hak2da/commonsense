@@ -132,7 +132,7 @@
   firebase.initializeApp(firebaseConfig);
   
   //gamehost:방장
-  var roomid,userid,user_nick,gamestatus=false,gamehost=false,gamehostid;
+  var roomid,userid,user_nick,gamestatus=false,gamehost_isme=false,gamehostid;
   var userlist;
   var userreadycount;
   var userStatusDatabaseRef;
@@ -162,7 +162,7 @@
 	  
 	  //방제 바꿔주는 리스너메서드 
 	  firebase.database().ref("rooms/"+roomid+"/setting/gamehostid").on("value",function(snapshot){
-		  gamehost = snapshot.val() == userid ? true : false;
+		  gamehost_isme = snapshot.val() == userid ? true : false;
 		  gamehostid=snapshot.val();
 	  });
 	  
@@ -226,7 +226,6 @@
 			
 			user.ready ? userreadycount++ : 0;
 			
-			console.log("gamehostid,user.user_id",gamehostid,user.user_id,gamehostid==user.user_id);
 			if(gamehostid!=null && user.user_id==gamehostid){//만약 userlist의 status가 host면 그대로 표시
 				pushtouserlist(user.user_nick+' / 방장');
 				gamehost_exist=true;
@@ -250,7 +249,7 @@
 	  var roomhost;
 
 	  //user 대기목록 나혼자일때
-	  if(Object.keys(userlist).length==1&&!gamehost_exist){
+	  if(Object.keys(userlist).length==1 && !gamehost_exist){
 		  
 	  	var myroomuserdata;
 	  	await getmyroomuserdata().then(result=> myroomuserdata = result);		
@@ -266,13 +265,13 @@
 				await getmyroomuserdata().then(result=> myroomuserdata = result);	
 			
 				if(local_userlist!=null && Object.keys(local_userlist).length==1 && myroomuserdata.status=='member'){
-					console.log("host changed");
-				
-					firebase.database().ref('rooms/'+roomid+'/setting').update({
+						
+					//host값을 신경써야되서 봐야함
+					await firebase.database().ref('rooms/'+roomid+'/setting').update({
 						gamehostid : userid
-				  	});		
+				  	});
 					
-					firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+					await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
 						status : "host"
 				  	});
 					
@@ -283,7 +282,7 @@
 		// rooms에  hostid가 있고 
 		// member중에 host인 사람의 id가 있는데 
 		// host value가 아닐때 hostvalue로 바꿔줌
-	  }else if(!gamehost_exist){
+	  }else if(Object.keys(userlist).length==1 && !gamehost_exist){
 		  var hostid;
 		  await gethostid().then(result => hostid = result);
 		  if(userid==hostid){
@@ -291,10 +290,50 @@
 				status : "host"
 			});
 		  }
-	  }else{
-		  console.log("else");
-	  }
+		//rooms ingame에 사람은 1명이상이고  gamehost는 존재하지않을때 새로운 host지정
+	  }else if(Object.keys(userlist).length > 1 && !gamehost_exist){
+		setTimeout(async function(){
+			
+		  	var local_userlist,local_gamehostid;
+		  	var local_gamehostexist=false;
+		  	
+			await getuserlist().then(result => local_userlist = result); //settimeout의 시간이 지난뒤 userlist를 가져옴
+			if(local_userlist==null) return;
+			
+			await gethostid().then(result => local_gamehostid = result);
+			
+			var spare_host;
+			for (var key in local_userlist) {
+				var user = 	local_userlist[key];
 				
+				if(local_gamehostid==user.user_id){
+					local_gamehostexist= true;
+					break;
+				}else{
+					if(spare_host==null) spare_host=user;
+					else if(spare_host.connect_time > user.connect_time) spare_host=user; 
+				}
+				
+			}
+
+			if(!local_gamehostexist && spare_host!=null && userid == spare_host.user_id){
+				
+				//host값을 신경써야되서 봐야함
+				await firebase.database().ref('rooms/'+roomid+'/setting').update({
+					gamehostid : userid
+			  	});
+				
+				await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+					status : "host"
+			  	});
+			}
+			
+			
+		},2000);
+		  
+	  }else{
+// 		  console.log("else");
+	  }		
 	  
   }
 	  
