@@ -27,11 +27,6 @@
 	<!-- include firebase database -->
 	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
 	
-	
-	<!-- include commonsense gameroomingame javascript -->
-	<script src="js/gameroomingame/anonymous_User.js"></script>
-	
-
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
@@ -43,6 +38,7 @@
 &emsp;&emsp;
 <input type="button" value="게임 시작" onclick="gamestart2();">
 <input type="button" value="방 설정 변경" onclick="makeroom_roomsetting()">
+
 
 <br><br>
 <font id="gameroom-title">방제:초보</font>
@@ -56,7 +52,7 @@
 	<font id="chatcontent"></font>
 </div>
 
-<div id="ingame_userlistdiv" style="overflow:auto; width:200px; height:150px;  background-color:#9dfaff;">
+<div id="ingame_userlistdiv" style="overflow:auto; width:250px; height:150px;  background-color:#9dfaff;">
 	<font id="ingame_userlist"></font>
 </div>
 
@@ -90,6 +86,18 @@
 				<option value=""> 3</option>
 				</select>
 				
+				게임 라운드 &nbsp;<select name="round" id="game_round">
+				<option value="3" selected> 3</option>
+				<option value="5"> 5</option>
+				<option value="7"> 7</option>
+				</select>
+				
+				시간 제한 &nbsp;<select name="time_limit" id="time_limit">
+				<option value="7" selected> 7</option>				
+				<option value="10"> 10</option>
+				<option value="13"> 13</option>
+				</select>
+				
 				<br><br>
 				<input type="radio" name="group" checked="">개인전
 				<input type="radio" name="group">팀전
@@ -109,30 +117,31 @@
       
     </div>
   </div>
- 
+  
+<!-- include commonsense gameroomingame javascript -->
+	<script src="js/gameroomingame/anonymous_User.js"></script>
+
+<!-- include commonsense firebase reference javascript -->
+	<script src="js/firebase_initiate/firebase_initiate.js"></script>
+	
+<!-- 	우클릭이벤트 보류 -->
+<!-- include  gameroomingame rightclick javascript -->
+<!--  	<script src="js/gameroomingame/rightclick_event.js"></script> -->
+
+<!-- include  gameroomingame rightclick css -->
+<!-- 	<link rel="stylesheet" href="css/gameroomingame/rightclick_event.css"> -->
+<!-- 	우클릭이벤트 보류 -->
+
 <script>
 'use strict';
 //<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
 //<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
 //<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
 //<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
-
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyCqVORIxXazIGcKlIaGTKn4YgX8R6Kg5Os",
-    authDomain: "fir-chattutorial-5f637.firebaseapp.com",
-    databaseURL: "https://fir-chattutorial-5f637.firebaseio.com",
-    projectId: "firebasechattutorial",
-    storageBucket: "firebasechattutorial.appspot.com",
-    
-    messagingSenderId: "1084417645508",
-    appId: "1:1084417645508:web:a86d313330cba20b0f2291"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
   
   //gamehost:방장
-  var roomid,userid,user_nick,gamestatus=false,gamehost_isme=false,gamehostid;
+  var roomid,userid,user_nick,gamestatus=false,gamehost_isme=false,gamehostid,kickout=false;
+  var anstry_Interval;
   var userlist;
   var userreadycount;
   var userStatusDatabaseRef;
@@ -151,8 +160,10 @@
 	  
 	  if(roomid==null||userid==null||user_nick==null){
 		 alert("사용자 데이터가 없습니다.");
+		 kickout=true;
 		 location.href="comsense-gameroomlist.html";
 	  }
+	  
 	  
 	  firebase.database().ref("rooms/"+roomid+"/chatting").on("child_added",function(snapshot){
 		var chat= snapshot.val().chat_user_nick+" : "+snapshot.val().chatcontent;
@@ -169,13 +180,23 @@
 	  });
 	  
 	//방제 바꿔주는 리스너메서드 
-	 firebase.database().ref("rooms/"+roomid+"/roomName").on("value",function(snapshot){
-		  $('#gameroom-title').text("방제 : " +snapshot.val());
+	 firebase.database().ref("rooms/"+roomid+"/setting").on("value",function(snapshot){
+		  $('#gameroom-title').text("방제 : " +snapshot.val().roomName);
 		  
 		  //모달창의 방제 이름
-		  $('#roomname').val(snapshot.val());
+		  $('#roomname').val(snapshot.val().roomName);
+		  
+		  //모달창의 라운드
+		  $('#game_round').val(snapshot.val().gameround);
+		  
+		  //모달창의 시간제한		  
+		  $('#time_limit').val(snapshot.val().time_limit);
 	  });
 	  
+	//시스템 메시지 리스너 
+	 firebase.database().ref("rooms/"+roomid+"/system").on("value",function(snapshot){
+		  pushtosystem(snapshot.val().system_msg,snapshot.val().system_msgcolor);
+	  });
 
 	  // Create a reference to this user's specific status node.
 	  // This is where we will store data about being online/offline.
@@ -215,6 +236,17 @@
 	  });
 	  // [END rtdb_presence]
 	  
+	  
+	   //방장이 강퇴시 나가게 되는 메서드 리스너
+	  firebase.database().ref("rooms/"+roomid+"/users/"+userstatusRef.key+"/status").on("value",function(snapshot){
+		  if(snapshot.val()==="kick_out"){
+			  kickout="true";
+			  alert("강퇴당하셨습니다.");
+			  localStorage.removeItem('roomid');
+			  location.href="comsense-gameroomlist.html";
+		  }
+	  });
+	  
 	  //ingame user handler
 	  firebase.database().ref('/rooms/'+roomid+'/users').on("value",function(snapshot){
 		erasetouserlist();
@@ -228,12 +260,22 @@
 			
 			user.ready ? userreadycount++ : 0;
 			
-			if(gamehostid!=null && user.user_id==gamehostid){//만약 userlist의 status가 host면 그대로 표시
+			if(gamehostid!=null && user.user_id==gamehostid ){//만약 userlist의 status가 host면 그대로 표시
 				pushtouserlist(user.user_nick+' / 방장');
+				if(user.status!="host"){
+					firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+						status : "host"
+				  	});
+				}
 				gamehost_exist=true;
 
 			}else{
-				pushtouserlist(user.user_nick+' / '+ (user.ready ? '준비완료':'대기중'));	
+				var userdata=user.user_nick+' / '+ (user.ready ? '준비완료':'대기중');
+				if(gamehost_isme) {
+					userdata+= "<button onclick=\"delegate_gamehost('"+user.user_id+"')\">방장</button>";
+					userdata+= "<button onclick=\"kickout_member('"+user.user_id+"','"+user.user_nick+"','"+key+"')\">강퇴</button>";
+				}
+				pushtouserlist(userdata);	
 			}
 			
 	  	};
@@ -245,6 +287,38 @@
 	  }); 
 	  
   //window.onload end
+  }
+  
+  async function delegate_gamehost(userid){
+	  
+	  //방장권한이고 alert창에서 확인을 눌렀을때
+	  if(!gamehost_isme || confirm("방장을 위임하시겠습니까?")==false) return;
+	  
+	 	 await firebase.database().ref('rooms/'+roomid+'/setting').update({
+				gamehostid : userid
+		 });
+	 	 
+	 	await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+			status : "member"
+	  	});
+	  
+  }
+  
+  
+  
+ 	async function kickout_member(user_id,user_nick,user_key){
+	  
+	  //방장권한이고 alert창에서 확인을 눌렀을때
+	  if(!gamehost_isme || confirm("'"+user_nick+"' 멤버를 추방시키겠습니까?")==false) return;
+	  
+	 	 await firebase.database().ref('rooms/'+roomid+'/users/'+user_key).update({
+				status : "kick_out"
+		 });
+	 	 
+// 	 	await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+// 			status : "member"
+// 	  	});
+	  
   }
   
   async function gamehost_manager(userlist,gamehost_exist){
@@ -338,7 +412,62 @@
 	  }		
 	  
   }
-	  
+  
+  async function gameremaing_progressnum(){
+		var gameround_value;
+		var gameroundprogress_value;
+
+		await firebase.database().ref('rooms/'+roomid+'/setting/gameround').once('value').then(function(snapshot){
+			gameround_value = snapshot.val()!=null ? snapshot.val() : 0;
+		});
+		
+		await firebase.database().ref('rooms/'+roomid+'/setting/gameround_progress').once('value').then(function(snapshot){
+			gameroundprogress_value = snapshot.val() != null ? snapshot.val() : 0;
+		});
+		
+		return gameround_value-gameroundprogress_value;
+	}
+  
+  async function gameprogress_stepup(){//게임진행도 한단계업 메서드
+		
+		var gameroundprogress_value;
+		
+		await firebase.database().ref('rooms/'+roomid+'/setting/gameround_progress').once('value').then(function(snapshot){
+			gameroundprogress_value = snapshot.val() != null ? snapshot.val() : 0;
+		});
+		
+		++gameroundprogress_value;
+		
+		await firebase.database().ref('rooms/'+roomid+'/setting').update({
+			gameround_progress : gameroundprogress_value
+	  	});
+	}
+  
+  async function get_timelimit(){//게임진행도 한단계업 메서드
+		
+		var time;
+		
+		await firebase.database().ref('rooms/'+roomid+'/setting/time_limit').once('value').then(function(snapshot){
+			time = snapshot.val() != null ? snapshot.val() : 0;
+		});
+		
+		return time;
+		
+	}
+  async function get_kickout_val(){
+	  var kickout;
+	  firebase.database().ref("rooms/"+roomid+"/users/"+userstatusRef.key+"/status").on("value",function(snapshot){
+		  kickout = snapshot.val()=="kick_out" ? true : false;
+	  });  
+	  return kickout
+  }
+  
+  async function progressround_setzero(){
+	  await firebase.database().ref('rooms/'+roomid+'/setting').update({
+			gameround_progress : 0
+	  	});
+  }
+  
   async function getmyroomuserdata(){
 		var value;  
 
@@ -359,7 +488,15 @@
   }
   
   async function getuserlist(){
-	  var value;	
+	  var value;
+	  await firebase.database().ref('/rooms/' + roomid+'/users').once('value').then(function(snapshot){
+			value= snapshot.val();
+		});
+	  return value;
+  }
+  
+  async function gettimelimit(){
+	  var value;
 	  await firebase.database().ref('/rooms/' + roomid+'/users').once('value').then(function(snapshot){
 			value= snapshot.val();
 		});
@@ -379,10 +516,10 @@
 // 	  if(!gamehost){//게임방장이 아니면 메서드 실행안됨
 // 		  return;
 // 	  }
-		 gbgamecount=gamecount;
-		 gbgamecount--;
+		gbgamecount=gamecount;
+		gbgamecount--;
 		 
-		 var count=0;
+		var count=0;
 
 		var genreindex = parseInt(Math.random()*(quizgenre_arr.length));//퀴즈장르의 배열의 숫자중 랜덤으로 하나의 숫자를 가져옴
 			$('#gameroom-quiztype').text("문제 유형 : " +quizgenre_arr[genreindex]);//하나의 숫자로 장르의 이름을 가져옴
@@ -414,7 +551,7 @@
 				gameend(gbgamecount,roomid);
 			}
 			
-		     },1000);
+	     },1000);
 
 	}//gamestart end
   
@@ -428,15 +565,10 @@
 		//  alert("게임을 시작합니다.");
 		}else{
 			 alert("준비되지 않은 플레이어가 있습니다.");
-			 console.log("Object.keys(userlist).length = ",Object.keys(userlist).length);
-			 console.log("userreadycount = ",userreadycount);
 			 return;
 		}
 		
-		firebase.database().ref('/rooms/'+roomid+'/ongame').update({
-			gamestatus : "gamestart"
-		});	
-	  
+		gamestatusupdate("gamestart");
   }
 	
 	var prevOnload_1 = window.onload;
@@ -444,10 +576,11 @@
 	
 	window.onload = function(){
 		prevOnload_1();//window onload를 두번 사용하기 위함
-		firebase.database().ref('/rooms/'+roomid+'/ongame').on("value",function(snapshot){
+		firebase.database().ref('/rooms/'+roomid+'/ongame').on("value",async function(snapshot){
+			
 			
 			ongame_status=snapshot.val().gamestatus;
-			console.log("ongame_status",ongame_status);
+			
 	  		switch (snapshot.val().gamestatus) {
 			case "gamestart":
 				erasetochat();
@@ -455,10 +588,9 @@
 				
 				//방장만 퀴즈 바꿀수 있게 함
 				if(gamehost_isme){
-					setTimeout(function(){
-						firebase.database().ref('/rooms/'+roomid+'/ongame').update({
-							gamestatus : "newquiz"
-						});
+					setTimeout(async function(){
+						await progressround_setzero();
+						gamestatusupdate("newquiz");
 					},2000);//2초뒤에 새퀴즈시작
 				}
 				break;
@@ -471,30 +603,68 @@
 				break;
 			
 			case "answer_trying":
-				
+				if(gamehost_isme){
+					var timelimit;
+					await get_timelimit().then(result=>timelimit =result);
+					
+					anstry_Interval = setInterval(async function() {
+
+						if( 1 < timelimit && --timelimit <= 5){
+							system_msg(timelimit+"초 남았습니다")
+	
+						}else if(timelimit<=1){
+							clearTimeout(anstry_Interval);
+							system_msg("아무도 맞추지 못했습니다.");
+							erasetochat();
+							await whatisanswer();
+							
+							setTimeout(function(){
+								gamestatusupdate("one_round_end");
+							},2000);
+						}
+                    },1000);                      
+				}
 				break;
 				
 			case "rightanswer":
+				
+				erasetochat();
+				clearTimeout(anstry_Interval);//정답을 맞췃을경우 interval취소
+				
 				firebase.database().ref('/rooms/'+roomid+'/ongame_answertrying').once("value",function(snapshot){
 					pushtochat("\n"+snapshot.val().user_nick+"님 정답입니다.");
 				});
-	  			
-				firebase.database().ref('/rooms/'+roomid+'/ongame_quiz/quizanswer_orig').once("value",function(snapshot){
-					pushtochat("\n정답은 「"+snapshot.val()+"」 입니다.");
-				});
+				
+				await whatisanswer();
+				
+				//여기서 게임라운드 진행value랑 게임라운드 value랑 비교하는 메서드
+				
 				if(gamehost_isme){
 					setTimeout(function(){
-						firebase.database().ref('/rooms/'+roomid+'/ongame').update({
-							gamestatus : "end"
-						});		
+						gamestatusupdate("one_round_end");
 					},2000);
-					
 				}
 				answer_arr=null;
 				break;
-			
-			case "end":
+			case "one_round_end":
 				
+				//progressround를 한라운드올리는 메서드 
+				await gameprogress_stepup();
+				
+				var gameremaing_count;
+				await gameremaing_progressnum().then(result => gameremaing_count=result);
+				
+				if(gameremaing_count>0){
+					gamestatusupdate("newquiz");
+				}else if(gameremaing_count<=0){
+					gamestatusupdate("game_end");
+				}else{
+					console.log("roundelse default")
+				}
+				
+				break;
+			case "game_end":
+				if(gamehost_isme) deletechat();
 				pushtochat("게임이 끝났습니다.");
 				break;
 				
@@ -502,28 +672,23 @@
 				console.log("125");
 				break;
 			}
-			
 			 
 		  });
 		
 		
 		firebase.database().ref('/rooms/'+roomid+'/ongame_answertrying').on("value",function(snapshot){
-			console.log("come1");
+			
 			if(gamehost_isme && ongame_status=="answer_trying" && answer_arr!=null){
-				console.log("come2");
+			
 				for(var key in answer_arr){
-					console.log("come3");
-					console.log("snapshot.val().user_answer",snapshot.val().user_answer);
-					console.log("ansitem",answer_arr[key]);
+			
 					if(snapshot.val().user_answer==answer_arr[key]){
-						console.log("come4");
-						firebase.database().ref('/rooms/'+roomid+'/ongame').update({
-							gamestatus : "rightanswer"
-						});
+						
+						gamestatusupdate("rightanswer")
 						return;
 					}
 				}
-				pushtochat("틀렸습니다.")
+				system_msg("틀렸습니다.")
 			}
 		});
 		
@@ -543,9 +708,6 @@
 	
 	
 	
-	
-	
-	
 	async function pushtoquiz_toserver(){
 		if(!gamehost_isme) return;
 		var genreindex = parseInt(Math.random()*(quizgenre_arr.length));//퀴즈장르의 배열의 숫자중 랜덤으로 하나의 숫자를 가져옴
@@ -554,7 +716,6 @@
 	 	await firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').update({
 			quizgenre : quizgenre_arr[genreindex]
 	  	});
-	 	
 		
 		var quiznans = new Array();
 		await firebase.database().ref("quizgenre/"+quizgenre_arr[genreindex]).on("child_added",function(snapshot){
@@ -564,9 +725,7 @@
 		var quizindex = parseInt(Math.random()*(quiznans.length));
 		quiznansitem = quiznans[quizindex];
 		
-		await firebase.database().ref('/rooms/'+roomid+'/ongame').update({
-			gamestatus : "answer_trying"
-		});
+		await gamestatusupdate("answer_trying");
 		
 		await firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').update({
 			quiz : quiznansitem.quiz,
@@ -576,8 +735,25 @@
 		
 	}
 
-  
+  	async function whatisanswer(){
+  		await firebase.database().ref('/rooms/'+roomid+'/ongame_quiz/quizanswer_orig').once("value",function(snapshot){
+			system_msg("\n정답은 「"+snapshot.val()+"」 입니다.");
+		});
+  	}
   	var user_readybool = false;
+  	
+  	function gamestatusupdate(update_value){
+  		if(gamehost_isme){
+  			firebase.database().ref('/rooms/'+roomid+'/ongame').update({
+				gamestatus : update_value
+			});
+  		}
+  	}
+  	
+  	function deletechat(){
+  		if(gamehost_isme)
+  			firebase.database().ref("rooms/"+roomid+"/chatting").remove();
+  	}
   	
 	function user_ready(){
 		if(!user_readybool){
@@ -597,6 +773,15 @@
 			ready : readybool
 		});
 	}
+	
+	function system_msg(msg,color){
+		if(!gamehost_isme) return;
+		if(color==null) color='black';
+		firebase.database().ref('/rooms/'+roomid+'/system').update({
+			system_msg : msg,
+			system_msgcolor : color
+		});
+	}
   
 	 function gameend(gamecount,roomid){
 	  quiznansitem=null;
@@ -612,10 +797,20 @@
 	 }
 	 
 	 function room_setting(){
-		 
-	 	firebase.database().ref("rooms/"+roomid).update({
-				"roomName":$('#roomname').val()
+		if(!gamehost_isme) return;
+		
+	 	firebase.database().ref("rooms/"+roomid+"/setting").update({
+			"roomName":$('#roomname').val()
 		});
+	 	
+	 	firebase.database().ref("rooms/"+roomid+"/setting/").update({
+			gameround : $("#game_round option:selected").val()
+		});
+	 	
+	 	firebase.database().ref("rooms/"+roomid+"/setting/").update({
+	 		time_limit : $("#time_limit option:selected").val()
+		});
+ 	
 	 }
 	 
   
@@ -625,13 +820,18 @@
 
 function enterkey() {
     if (window.event.keyCode == 13) {
-
     	useranswertrying();
     }
 }
 
 function pushtochat(txt){
 	document.getElementById("chatcontent").innerHTML+='<span>'+txt+'</span><br>';
+	$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
+}
+
+function pushtosystem(txt,color){
+	if(color==null) color="black";
+	document.getElementById("chatcontent").innerHTML+='<span style=\"color:'+color+'\">'+txt+'</span><br>';
 	$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
 }
 
@@ -663,28 +863,6 @@ function useranswertrying(){
 	setTimeout(function() {
 		$('#gameroom-useranswer').fadeOut( 1500, 'swing' );
     },700);
-	
-// 	if(quiznansitem!=null&&testInterval!=null){
-		
-// 		var chk=false;
-
-// 		//정답 배열이랑 질문자의 대답이랑 확인하는 메서드
-// 		for (var i = 0; i < quiznansitem.answer_array.length; i++) { 
-// 			if(quiznansitem.answer_array[i]==useranswer.toUpperCase()) {
-// 				chk = true;
-// 				break;
-// 			}
-// 		}
-// 		if(chk){
-// 			clearTimeout(testInterval);
-			
-// 			pushtochat("");
-// 			pushtochat("[[[정답입니다!!]]]");
-// 			pushtochat("");
-			
-// 			gameend(gbgamecount,roomid);
-// 		}
-// 	}
     
 	//save in database
 	firebase.database().ref("rooms/"+roomid+"/chatting").push().set({
@@ -693,7 +871,8 @@ function useranswertrying(){
 		"chat_user_id" : userid
 	});
 	
-	if(ongame_status=="answer_trying"){
+	if(ongame_status=="answer_trying"){//만약 게임이 시작되서 answer_trying의 경우
+		useranswer=replaceAll(useranswer," ","");
 		firebase.database().ref("rooms/"+roomid+"/ongame_answertrying").set({
 			"user_answer" : useranswer,
 			"user_nick" : user_nick,
@@ -702,6 +881,13 @@ function useranswertrying(){
 	}
 	
 }
+
+function replaceAll(str, searchStr, replaceStr) {
+
+	   return str.split(searchStr).join(replaceStr);
+}
+
+
 
 function gotoroomlist(){
 	location.href="comsense-gameroomlist.html";
@@ -719,18 +905,29 @@ function sleep(ms) {
 <script>
 // <<<<<<<<<<<<		modal	<<<<<<<<<<<<<<<<<
 	function makeroom_roomsetting(){
-		 $("#roomSetting").modal();
+		if(!gamehost_isme){
+			alert("방장이 아닙니다.");
+			return;
+		}
+		$("#roomSetting").modal();
 	}
 	
 	// <<<<<<<<<<<<		reload alert	<<<<<<<<<<<<<<<<<
-	
-	window.onbeforeunload = function(e) {
-// 	    var dialogText = 'Dialog text here';
-		//강퇴시킬때 boolean의 값을 바꿔주면된다
-		var kickout=false;
-	    dialogText=testbool ? '':'1';
-	    e.returnValue = dialogText;
-	    return dialogText;
+	//페이지를 나갈때 호출되는 메서드
+	window.onbeforeunload = async function(e) {		
+		//kickout상태면 onbeforeunload fuction을 활용안하고 바로 대기실로
+		var kick_out;
+		await get_kickout_val().then(result => kick_out=result);
+	    var dialogText=kickout ? '' :'Dialog text here';
+	    if(!kick_out){
+	    	e.returnValue = dialogText;
+		    return dialogText;
+	    }else{
+	    		
+	    }//kickout상태면 localstorage삭제 =>window onload에서 roomid를 찾을 수 없으니 나가짐
+    
+	    await localStorage.removeItem('roomid');
+	    
 	};
 
 </script>
