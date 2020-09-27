@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="css/animate.css">
+<!-- Icomoon Icon Fonts-->
+<link rel="stylesheet" href="css/icomoon.css">
+<!-- Bootstrap  -->
+<link rel="stylesheet" href="css/bootstrap.css">
+
+
+<!-- Theme style  -->
+<link rel="stylesheet" href="css/bootstrapmin.css">
+
+<link rel="stylesheet" href="css/Main_page/react_button.css">
+
+<link rel="stylesheet" href="css/Main_page/style.css">
+
+ <!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Main -->	
+	<script src="js/main.js"></script>
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
+	
+	<!-- include firebase database -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.RoomListBox div {
+    float: left;
+}
+
+.product-body {
+/*     width: 780px; */
+	width: 100%;
+    height: 530px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+    padding: 5px 5px 0px 5px;
+    font-family: 'Gothic';
+	border:1px;
+	outline:1px;
+	background-color:white;
+}
+
+.rooms-item {
+    padding: 5px;
+    border-radius: 10px;
+    margin: 1%;
+    width: 31%;
+    height: 70%;
+    box-shadow: 0px 1px 3px 1px #777777;
+/*     cursor: pointer; */
+    transition: all 300ms ease;
+    color:black;
+/*     background-color:#e0e0e0; */
+    background-color:#ffffff;
+}
+
+.users-name {
+    padding: 2px 0px 2px 7px;
+    width: 147px;
+    font-size: 15px;
+    font-weight: bold;
+    color:black;
+}
+
+.ellipse {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.product-title {
+    border-bottom-color: #CCCCCC;
+    border-radius: 5px;
+    color: #222222;
+    background-color: #dddddd;
+    padding: 3px;
+    border-bottom: 1px outset #d2d2d2;
+    border-right: 1px outset #d2d2d2; 
+    margin-bottom: 5px;
+    width:100%;
+    height: 25px; 
+	text-align:left; 
+	padding-left:1.3%; 
+    font-family:'NanumBarunGothic';    
+
+}
+
+input{
+-webkit-writing-mode: horizontal-tb !important;
+    text-rendering: auto;
+    color: -internal-light-dark(black, white);
+    letter-spacing: normal;
+    word-spacing: normal;
+    text-transform: none;
+    text-indent: 0px;
+    text-shadow: none;
+    display: inline-block;
+    text-align: start;
+    appearance: textfield;
+    background-color: -internal-light-dark(rgb(255, 255, 255), rgb(59, 59, 59));
+    -webkit-rtl-ordering: logical;
+    cursor: text;
+    margin: 0em;
+    font: 400 13.3333px Arial;
+    display: block;
+    font-family: inherit;
+    padding: 5px;
+    border: 1px solid #AAAAAA;
+    border-radius: 10px;
+    resize: none;
+    padding-left:1%;
+    }
+    
+ .waitroom{
+ 	float: left;
+/*     border-left: 0px; */
+    outline:0px;
+    
+    color:black;
+    margin-top: 5px;
+    width: 82px;
+    height: 20px;
+    padding-left:2%;
+    padding-right:2%;
+    border-radius: 0 10px 10px 0;
+ }
+ 
+ .chat-item {
+    float: left;
+    padding: 1px 0px;
+    margin: 1px 0px;
+    width: 100%;
+    overflow: hidden;
+}
+ .chat-head {
+    float: left;
+    padding-right: 4px;
+    margin-right: 5px;
+    width: 100px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+}
+.chat-body {
+    float: left;
+    width: calc(100% - 190px);
+    min-height: 14px;
+}
+.chat-stamp {
+    float: left;
+    padding-top: 2px;
+    width: 70px;
+    font-size: 11px;
+    text-align: right;
+    color: #999999;
+}
+
+</style>
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div id="wrapper">
+	<div id="menu-wrapper" style="height:100px;">
+		<div style="line-height:100px;margin-left:20%;width:30%;height:100%;float:left;font-size:25px;color:white;font-weight:900;">
+			<a href="Main_lobby.html"> 
+				<img src="img/Main_page/brain-physical-tp2.png" style="width:80%;margin-bottom:3%;"/>
+			</a>
+		</div>
+		<div style="line-height:100%;margin-left:17%;width:33%;height:100%;float:left;overflow: auto;font-size:25px;color:white;font-weight:900;"> 
+			<div style="margin-top:5%;">
+				<font>레드매실님 환영함다!</font>
+			</div>
+		</div>
+	
+	</div>
+
+<div>
+	<div id="adleft" style="width:20%;height:500px;float:left">
+	</div>
+	<div style="width:60%;float:left">
+		<div id="RoomListBox" class="RoomListBox Product" style="position: relative;background-color:white;">
+			<div style="width:20%;">
+				<div class="product-title">접속자 목록</div>
+				<div class="product-body">
+					<div class="users-name ellipse">코게이누</div>
+					<div class="users-name ellipse">코카이누</div>
+					<div class="users-name ellipse">레드매실</div>
+				</div>
+				
+			</div>
+			<div style="width:80%;height:500px;">
+				<div class="product-title">접속자 목록</div>
+				<div class="product-body" style="height:60%;">
+								<div id="room-343" class="rooms-item rooms-gaming rooms-locked">
+								
+								<div style="width:100%;text-align:center;font-size:20px;font-weight:600;margin-top:4%;">
+								<span>titleㅎㅇ</span>
+								
+								<div style="width:100%;height:1px;display:flex;justify-content:center;">
+									<hr style="background-color:black;width:90%;height:100%;border-top:0.5px;">
+								</div>
+								</div>
+									
+									<div style="float:left;width:30%;margin-left:10%;line-height:200%;margin-top:5%; ">
+										<div style="margin-top:18%;background-color:#1abc9c;width:90%;text-align:center;vertical-align:middle;
+											color:white;border-radius:50px;font-weight:bold;">
+										개인전</div>
+										
+										<div style="margin-top:18%;background-color:#e67e22;width:90%;text-align:center;vertical-align:middle;
+											color:white;border-radius:50px;font-weight:bold;">
+										게임중</div>
+									</div>
+									
+									<div style="float:left;width:50%;line-height:200%;margin-top:5%; margin-right:10%;text-align:right;">
+										
+										<div style="margin-top:11%;width:90%;text-align:right;vertical-align:middle;
+											color:black;font-weight:bold;">
+										방장:레드매실님</div>
+										
+										<div style="margin-top:11%;width:90%;text-align:right;vertical-align:middle;
+											color:black;font-weight:bold;">
+										방 인원:2/6</div>
+									</div>
+									
+									<div style="width:100%;height:40%;text-align:center;font-size:15px;font-weight:bolder;margin-top:8%;color:white;">
+										<button onclick="goingame();" style="background-color:#3498db;border-radius:7px;width:40%;height:40%;border:0;outline:0;">참가하기</button>
+									</div>
+								</div>
+								
+								<div id="room-343" class="rooms-item rooms-gaming rooms-locked">
+								
+								<div style="width:100%;text-align:center;font-size:20px;font-weight:600;margin-top:4%;">
+								<img src="img/sub_gameroom/lock.png" style="width:8%;height:8%;"/>
+								<span style="vertical-align:middle;">길게적으면?</span>
+								</div>						
+								<div style="width:100%;height:1px;display:flex;justify-content:center;">
+									<hr style="background-color:black;width:90%;height:100%;border-top:0.5px;">
+								</div>
+								
+									<div style="float:left;width:30%;margin-left:10%;line-height:200%;margin-top:5%; ">
+										<div style="margin-top:18%;background-color:#004aff;width:90%;text-align:center;vertical-align:middle;
+											color:white;border-radius:50px;font-weight:bold;">
+										팀전</div>
+										
+										<div style="margin-top:18%;background-color:rgb(240 210 62);width:90%;text-align:center;vertical-align:middle;
+											color:white;border-radius:50px;font-weight:bold;">
+										대기중</div>
+									</div>
+									
+									<div style="float:left;width:50%;line-height:200%;margin-top:5%; margin-right:10%;text-align:right;">
+										
+										<div style="margin-top:11%;width:90%;text-align:right;vertical-align:middle;
+											color:black;font-weight:bold;">
+										방장:레드매실님</div>
+										
+										<div style="margin-top:11%;width:90%;text-align:right;vertical-align:middle;
+											color:black;font-weight:bold;">
+										방 인원:2/6</div>
+									</div>
+									
+									<div style="width:100%;height:40%;text-align:center;font-size:15px;font-weight:bolder;margin-top:8%;color:white;">
+										<button style="background-color:#3498db;border-radius:7px;width:40%;height:40%;border:0;outline:0;">참가하기</button>
+									</div>
+								</div>
+								
+								<div id="room-343" class="rooms-item rooms-gaming rooms-locked"><div class="rooms-channel channel-2"></div><div class="rooms-number">343</div><div class="rooms-title ellipse">단렷님의 방</div><div class="rooms-limit">3 / 8</div><div style="width: 270px;"><div class="rooms-mode">한국어 솎솎</div><div class="rooms-round">라운드 10</div><div class="rooms-time">60초</div></div><div class="rooms-lock"><i class="fa fa-lock"></i></div></div>
+							<div id="room-343" class="rooms-item rooms-gaming rooms-locked"><div class="rooms-channel channel-2"></div><div class="rooms-number">343</div><div class="rooms-title ellipse">단렷님의 방</div><div class="rooms-limit">3 / 8</div><div style="width: 270px;"><div class="rooms-mode">한국어 솎솎</div><div class="rooms-round">라운드 10</div><div class="rooms-time">60초</div></div><div class="rooms-lock"><i class="fa fa-lock"></i></div></div>
+							<div id="room-343" class="rooms-item rooms-gaming rooms-locked"><div class="rooms-channel channel-2"></div><div class="rooms-number">343</div><div class="rooms-title ellipse">단렷님의 방</div><div class="rooms-limit">3 / 8</div><div style="width: 270px;"><div class="rooms-mode">한국어 솎솎</div><div class="rooms-round">라운드 10</div><div class="rooms-time">60초</div></div><div class="rooms-lock"><i class="fa fa-lock"></i></div></div>
+						</div>
+				<div class="product-title">채팅</div>
+				<div class="product-body" style="height:35%;">
+				<div class="chat-item"><div class="chat-head ellipse">정도혀</div><div class="chat-body">게</div><div class="chat-stamp">오전 2:32:32</div></div>
+				</div>
+				
+				<input id="UserMessage30755" maxlength="200" autocomplete="off" style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;">
+				<button class="waitroom" >전송</button>
+				
+			</div>
+		</div>
+	
+	</div>
+	<div id="adright" style="width:20%;height:500px;float:left">
+	</div>
+</div>
+</div>
+
+<!-- Modal -->
+   <!-- 방만들기 설정값 -->
+  <div  class="modal fade" id="roomSetting" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div style="width:400px;margin-left:40%; margin-top:8%; vertical-align:middle;" class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h3 style="font-weight: bold;text-align:center;" class="modal-title">방 설정</h3>
+        </div>
+        <div class="modal-body">
+          
+				제목 <input id="roomname" type="text" value="">
+				
+				<br><br>
+				게임 인원 &nbsp;<select name="job">
+				<option value=""> 선택</option>
+				<option value=""> 1</option>
+				<option value=""> 2</option>
+				<option value=""> 3</option>
+				</select>
+				
+				<br><br>
+				<input type="radio" name="group" checked="">개인전
+				<input type="radio" name="group">팀전
+				
+				<br><br>
+				
+				<input type="checkbox" name="chk_info" value="HTML">잠금설정 
+				<input type="text" value=""  placeholder="Enter password...">
+				
+				<br><br>
+        </div>
+        <div class="modal-footer">
+       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="makeroom_makeroom()">확인</button>
+          	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+</body>
+<script>
+function goingame(){
+	location.href="Sub_gameroom.html";
+}
+
+function makeroom_roomsetting(){	
+	 $("#roomSetting").modal();
+	 
+}
+
+
+
+
+</script>
+
+</html>
