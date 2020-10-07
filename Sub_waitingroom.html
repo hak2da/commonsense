@@ -16,7 +16,13 @@
 
 <link rel="stylesheet" href="css/Main_page/react_button.css">
 
-<link rel="stylesheet" href="css/Main_page/style.css">
+<link rel="stylesheet" href="css/common/react_style.css">
+
+
+<!-- commonsense common.css -->
+	<link rel="stylesheet" href="css/common/common.css">
+<!-- commonsense common.css -->
+	<link rel="stylesheet" href="css/sub_waitingroom/Sub_waitingroom.css">
 
  <!-- jQuery -->
 	<script src="js/jquery.min.js"></script>
@@ -33,146 +39,9 @@
 	
 	<!-- include firebase database -->
 	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-}
-
-.RoomListBox div {
-    float: left;
-}
-
-.product-body {
-/*     width: 780px; */
-	width: 100%;
-    height: 530px;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    padding: 5px 5px 0px 5px;
-    font-family: 'Gothic';
-	border:1px;
-	outline:1px;
-	background-color:white;
-}
-
-.rooms-item {
-    padding: 5px;
-    border-radius: 10px;
-    margin: 1%;
-    width: 31%;
-    height: 70%;
-    box-shadow: 0px 1px 3px 1px #777777;
-/*     cursor: pointer; */
-    transition: all 300ms ease;
-    color:black;
-/*     background-color:#e0e0e0; */
-    background-color:#ffffff;
-}
-
-.users-name {
-    padding: 2px 0px 2px 7px;
-    width: 147px;
-    font-size: 15px;
-    font-weight: bold;
-    color:black;
-}
-
-.ellipse {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.product-title {
-    border-bottom-color: #CCCCCC;
-    border-radius: 5px;
-    color: #222222;
-    background-color: #dddddd;
-    padding: 3px;
-    border-bottom: 1px outset #d2d2d2;
-    border-right: 1px outset #d2d2d2; 
-    margin-bottom: 5px;
-    width:100%;
-    height: 25px; 
-	text-align:left; 
-	padding-left:1.3%; 
-    font-family:'NanumBarunGothic';    
-
-}
-
-input{
--webkit-writing-mode: horizontal-tb !important;
-    text-rendering: auto;
-    color: -internal-light-dark(black, white);
-    letter-spacing: normal;
-    word-spacing: normal;
-    text-transform: none;
-    text-indent: 0px;
-    text-shadow: none;
-    display: inline-block;
-    text-align: start;
-    appearance: textfield;
-    background-color: -internal-light-dark(rgb(255, 255, 255), rgb(59, 59, 59));
-    -webkit-rtl-ordering: logical;
-    cursor: text;
-    margin: 0em;
-    font: 400 13.3333px Arial;
-    display: block;
-    font-family: inherit;
-    padding: 5px;
-    border: 1px solid #AAAAAA;
-    border-radius: 10px;
-    resize: none;
-    padding-left:1%;
-    }
-    
- .waitroom{
- 	float: left;
-/*     border-left: 0px; */
-    outline:0px;
-    
-    color:black;
-    margin-top: 5px;
-    width: 82px;
-    height: 20px;
-    padding-left:2%;
-    padding-right:2%;
-    border-radius: 0 10px 10px 0;
- }
- 
- .chat-item {
-    float: left;
-    padding: 1px 0px;
-    margin: 1px 0px;
-    width: 100%;
-    overflow: hidden;
-}
- .chat-head {
-    float: left;
-    padding-right: 4px;
-    margin-right: 5px;
-    width: 100px;
-    font-weight: bold;
-    text-align: center;
-    cursor: pointer;
-}
-.chat-body {
-    float: left;
-    width: calc(100% - 190px);
-    min-height: 14px;
-}
-.chat-stamp {
-    float: left;
-    padding-top: 2px;
-    width: 70px;
-    font-size: 11px;
-    text-align: right;
-    color: #999999;
-}
-
-</style>
+	
+	<!-- include commonsense firebase reference javascript -->
+	<script src="js/firebase_initiate/firebase_initiate.js"></script>
 
 <meta charset="UTF-8">
 <title>Insert title here</title>
@@ -180,35 +49,32 @@ input{
 <body>
 <div id="wrapper">
 	<div id="menu-wrapper" style="height:100px;">
-		<div style="line-height:100px;margin-left:20%;width:30%;height:100%;float:left;font-size:25px;color:white;font-weight:900;">
+		<div class="head-left">
 			<a href="Main_lobby.html"> 
 				<img src="img/Main_page/brain-physical-tp2.png" style="width:80%;margin-bottom:3%;"/>
 			</a>
 		</div>
-		<div style="line-height:100%;margin-left:17%;width:33%;height:100%;float:left;overflow: auto;font-size:25px;color:white;font-weight:900;"> 
+		<div class="head-right"> 
 			<div style="margin-top:5%;">
-				<font>레드매실님 환영함다!</font>
+				<font id="right_usernick"></font>
 			</div>
 		</div>
 	
 	</div>
 
 <div>
-	<div id="adleft" style="width:20%;height:500px;float:left">
+	<div id="adleft" class="adleft">
 	</div>
 	<div style="width:60%;float:left">
-		<div id="RoomListBox" class="RoomListBox Product" style="position: relative;background-color:white;">
+		<div id="RoomListBox" class="RoomListBox Product">
 			<div style="width:20%;">
 				<div class="product-title">접속자 목록</div>
-				<div class="product-body">
-					<div class="users-name ellipse">코게이누</div>
-					<div class="users-name ellipse">코카이누</div>
-					<div class="users-name ellipse">레드매실</div>
+				<div class="product-body" id="user_list">
 				</div>
 				
 			</div>
 			<div style="width:80%;height:500px;">
-				<div class="product-title">접속자 목록</div>
+				<div class="product-title">방 목록</div>
 				<div class="product-body" style="height:60%;">
 								<div id="room-343" class="rooms-item rooms-gaming rooms-locked">
 								
@@ -282,17 +148,15 @@ input{
 									</div>
 								</div>
 								
-								<div id="room-343" class="rooms-item rooms-gaming rooms-locked"><div class="rooms-channel channel-2"></div><div class="rooms-number">343</div><div class="rooms-title ellipse">단렷님의 방</div><div class="rooms-limit">3 / 8</div><div style="width: 270px;"><div class="rooms-mode">한국어 솎솎</div><div class="rooms-round">라운드 10</div><div class="rooms-time">60초</div></div><div class="rooms-lock"><i class="fa fa-lock"></i></div></div>
-							<div id="room-343" class="rooms-item rooms-gaming rooms-locked"><div class="rooms-channel channel-2"></div><div class="rooms-number">343</div><div class="rooms-title ellipse">단렷님의 방</div><div class="rooms-limit">3 / 8</div><div style="width: 270px;"><div class="rooms-mode">한국어 솎솎</div><div class="rooms-round">라운드 10</div><div class="rooms-time">60초</div></div><div class="rooms-lock"><i class="fa fa-lock"></i></div></div>
-							<div id="room-343" class="rooms-item rooms-gaming rooms-locked"><div class="rooms-channel channel-2"></div><div class="rooms-number">343</div><div class="rooms-title ellipse">단렷님의 방</div><div class="rooms-limit">3 / 8</div><div style="width: 270px;"><div class="rooms-mode">한국어 솎솎</div><div class="rooms-round">라운드 10</div><div class="rooms-time">60초</div></div><div class="rooms-lock"><i class="fa fa-lock"></i></div></div>
 						</div>
 				<div class="product-title">채팅</div>
-				<div class="product-body" style="height:35%;">
-				<div class="chat-item"><div class="chat-head ellipse">정도혀</div><div class="chat-body">게</div><div class="chat-stamp">오전 2:32:32</div></div>
+				<div class="product-body" id="chat-item-box" style="height:35%;">
+					<div class="chat-item" id="chat-item">
+					</div>
 				</div>
 				
-				<input id="UserMessage30755" maxlength="200" autocomplete="off" style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;">
-				<button class="waitroom" >전송</button>
+				<input id="usermsg_inputbox" class="usermsg_inputbox" onkeyup="enterkey();" maxlength="200" autocomplete="off">
+				<button class="waitroom_sendbutton" onclick="userchatting();" >전송</button>
 				
 			</div>
 		</div>
@@ -357,9 +221,150 @@ function makeroom_roomsetting(){
 	 
 }
 
+</script>
 
+<script>
 
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<	
+	
+	
+	var ws_usernick;
+	var ws_userid;
+	window.onload = function(){
+		
+		//USER ID,NICKNAME 값을 파이어베이스에 저장할것
+		
+		ws_usernick = localStorage.getItem('usernick');
+		ws_userid = localStorage.getItem('userid');
+		
+		if(ws_userid==null||ws_usernick==null){
+			location.href="Main_lobby.html";
+		}
+		
+		$("#right_usernick").text(ws_usernick+"님 환영합니다!");
+		
+		// connect status 		
+		// 접속 상태
+	    // [START rtdb_presence]
+	    // Fetch the current user's ID from Firebase Authentication.
 
+	    var uid = ws_userid;
+	    
+	    // Create a reference to this user's specific status node.
+	    // This is where we will store data about being online/offline.
+
+	    var userStatusDatabaseRef = firebase.database().ref('orig_server/waitingroom/userlist/'+ws_userid);
+
+	    // We'll create two constants which we will write to 
+	    // the Realtime database when this device is offline
+	    // or online.
+	    var isOfflineForDatabase = {
+	    };
+
+	    var isOnlineForDatabase = {
+	        user_nick : ws_usernick
+	        
+	    };
+
+	    // Create a reference to the special '.info/connected' path in 
+	    // Realtime Database. This path returns `true` when connected
+	    // and `false` when disconnected.
+	    firebase.database().ref('.info/connected').on('value', function(snapshot) {
+	        // If we're not currently connected, don't do anything.
+	        if (snapshot.val() == false) {
+	            return;
+	        };
+
+	        // If we are currently connected, then use the 'onDisconnect()' 
+	        // method to add a set which will only trigger once this 
+	        // client has disconnected by closing the app, 
+	        // losing internet, or any other means.
+        	userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
+	            // The promise returned from .onDisconnect().set() will
+	            // resolve as soon as the server acknowledges the onDisconnect() 
+	            // request, NOT once we've actually disconnected:
+	            // https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect
+
+	            // We can now safely set ourselves as 'online' knowing that the
+	            // server will mark us as offline once we lose connection.
+	            userStatusDatabaseRef.set(isOnlineForDatabase);
+	        });
+	    });
+	    // [END rtdb_presence]
+		
+	}
+	
+	firebase.database().ref("orig_server/waitingroom/userlist").on("value",function(snapshot){
+		  $("#user_list").html("");		  
+		  var userlist = snapshot.val();
+		  for(key in userlist){
+			  $("#user_list").append("<div class=\"users-name ellipse\">"+userlist[key].user_nick+"</div>");
+		  }
+  	});
+	
+	function enterkey() {
+	    if (window.event.keyCode == 13) {
+	    	userchatting();
+	    }
+	}
+	
+	function userchatting(){
+		var userchatting = $('#usermsg_inputbox').val();
+		
+		if(userchatting==null||userchatting=="")return;
+		$('#usermsg_inputbox').val('');
+		
+		//save in database
+		firebase.database().ref("orig_server/waitingroom/userchatting").set({
+			"chatcontent" : userchatting,
+			"chat_user_nick" : ws_usernick,
+			"chat_user_id" : ws_userid
+		});
+		
+		firebase.database().ref("orig_server/waitingroom/userchatting").set({
+		});
+	}
+	
+	firebase.database().ref("orig_server/waitingroom/userchatting").on("value",function(snapshot){
+		if(snapshot.val()==null) return;
+		
+		var mycolor="";
+		if(snapshot.val().chat_user_id==ws_userid){
+			mycolor="mycolor";
+		}
+		
+		
+		$("#chat-item").append("<div class=\"chat-head ellipse "+mycolor+"\">"+snapshot.val().chat_user_nick+"</div>");
+		$("#chat-item").append("<div class=\"chat-body "+mycolor+"\">"+snapshot.val().chatcontent+"</div>");
+		$("#chat-item").append("<div class=\"chat-stamp "+mycolor+"\">"+gettime()+"</div>");
+		
+		$("#chat-item-box").scrollTop($("#chat-item-box")[0].scrollHeight);
+	});
+	
+	function gettime(){
+		let today = new Date();   
+
+		let hours = today.getHours(); // 시
+		let minutes = today.getMinutes();  // 분
+		let seconds = today.getSeconds();  // 초
+		let ampm="";
+		if(hours>12){
+			hours-=12;
+			ampm="오후";
+		}else{
+			ampm="오전";
+		}
+		 
+		minutes = minutes.toString().length==1 ? "0"+minutes : minutes;
+		seconds = seconds.toString().length==1 ? "0"+seconds : seconds;
+		
+		return ampm+" "+hours+":"+minutes+":"+seconds;
+	}
+	
+	
 </script>
 
 </html>

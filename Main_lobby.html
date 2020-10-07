@@ -12,11 +12,14 @@
 
 
 <!-- Theme style  -->
-<link rel="stylesheet" href="css/bootstrapmin.css">
-
-<link rel="stylesheet" href="css/Main_page/react_button.css">
-
-<link rel="stylesheet" href="css/Main_page/style.css">
+	<link rel="stylesheet" href="css/bootstrapmin.css">
+	
+	<link rel="stylesheet" href="css/Main_page/react_button.css">
+	
+	<link rel="stylesheet" href="css/common/react_style.css">
+	
+<!-- commonsense common.css -->
+	<link rel="stylesheet" href="css/common/common.css">
 
  <!-- jQuery -->
 	<script src="js/jquery.min.js"></script>
@@ -33,6 +36,9 @@
 	
 	<!-- include firebase database -->
 	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+	
+	<!-- include commonsense firebase reference javascript -->
+	<script src="js/firebase_initiate/firebase_initiate.js"></script>
 
 <meta charset="UTF-8">
 <title>Insert title here</title>
@@ -40,16 +46,16 @@
 <body>
 <div id="wrapper">
 	<div id="menu-wrapper" style="height:100px;">
-		<div style="line-height:100px;margin-left:20%;width:30%;height:100%;float:left;font-size:25px;color:white;font-weight:900;"> 
+		<div class="head-left"> 
 			<a href="Main_lobby.html"> 
 				<img src="img/Main_page/brain-physical-tp2.png" style="width:80%;margin-bottom:3%;"/>
 			</a>
 			
 		</div>
-		<div style="line-height:100%;margin-left:17%;width:33%;height:100%;float:left;overflow: auto;font-size:25px;color:white;font-weight:900;"> 
+		<div class="head-right"> 
 			<div style="margin-top:5%;">
-				<font>123</font>
-				<button style="border-radius:7px; color:black;width:15%;height:40px;border:0;outline:0;">닉변</button>
+				<font id="user_nickname"></font>
+				<button style="border-radius:7px; color:black;width:15%;height:40px;border:0;outline:0;" onclick="nick_change()">닉변</button>
 			</div>
 		</div>
 		
@@ -145,16 +151,156 @@
 </body>
 <script>
 function makeroom_roomsetting(){
-	
-
-	
-	 $("#roomSetting").modal();
-	 
+	$("#roomSetting").modal();
 }
 
+function randomString(ranlength) {
+	var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+	var string_length = ranlength;
+	var randomstring = '';
+	for (var i=0; i<string_length; i++) {
+	var rnum = Math.floor(Math.random() * chars.length);
+	randomstring += chars.substring(rnum,rnum+1);
+	}
+	//document.randform.randomfield.value = randomstring;
+	return randomstring;
+}
+</script>
 
 
+<script>
 
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<	
+	
+	
+	var ws_usernick;
+	var ws_userid;
+	window.onload = function(){
+		
+		//USER ID,NICKNAME 값을 파이어베이스에 저장할것
+		
+		ws_usernick = localStorage.getItem('usernick');
+		ws_userid = localStorage.getItem('userid');
+		
+		if(ws_userid==null||ws_usernick==null){
+			var usernick = "USER_"+randomString(6);
+			
+			var useridRef = firebase.database().ref("users/anonymous").push({
+				user_nick : usernick
+			});
+			
+			var userid = useridRef.key;
+			
+			localStorage.setItem('usernick', usernick);
+			localStorage.setItem('userid', userid);
+			
+			ws_usernick = localStorage.getItem('usernick');
+			ws_userid = localStorage.getItem('userid');
+			
+			firebase.database().ref("users/anonymous/"+ws_userid).on("value",function(snapshot){
+				$("#user_nickname").text(snapshot.val().user_nick);
+		  	});
+			
+		}else if(ws_userid != null && ws_usernick != null){
+	
+			firebase.database().ref("users/anonymous/"+ws_userid).on("value",function(snapshot){
+				
+				try{
+					if(snapshot.val().user_nick!=null){
+						
+						$("#user_nickname").text(snapshot.val().user_nick);
+						localStorage.setItem('usernick', snapshot.val().user_nick);
+						ws_usernick=snapshot.val().user_nick;
+						
+					}else if(snapshot.val().user_nick==null&&ws_userid!=null){
+						firebase.database().ref("users/anonymous/"+ws_userid).set({
+							user_nick : ws_usernick
+						});
+						
+					}else{
+						alert("err");	
+					}
+				}catch(e){
+					console.log("err",e);
+					localStorage.removeItem('usernick');
+					localStorage.removeItem('userid');
+					location.reload(true);
+				}
+				
+		  	});
+			
+		}else{
+			alert("error occured!!\n when bring the user information");
+			localStorage.removeItem('usernick');
+			localStorage.removeItem('userid');
+		}
+		
+		// connect status 		
+		// 접속 상태
+	    // [START rtdb_presence]
+	    // Fetch the current user's ID from Firebase Authentication.
+
+	    var uid = ws_userid;
+	    
+	    // Create a reference to this user's specific status node.
+	    // This is where we will store data about being online/offline.
+
+	    var userStatusDatabaseRef = firebase.database().ref('/users/anonymous/' + uid+'/status');
+
+	    // We'll create two constants which we will write to 
+	    // the Realtime database when this device is offline
+	    // or online.
+	    var isOfflineForDatabase = {
+	        state: 'offline',
+	        last_changed: firebase.database.ServerValue.TIMESTAMP,
+	    };
+
+	    var isOnlineForDatabase = {
+	        state: 'online',
+	        last_changed: firebase.database.ServerValue.TIMESTAMP,
+	    };
+
+	    // Create a reference to the special '.info/connected' path in 
+	    // Realtime Database. This path returns `true` when connected
+	    // and `false` when disconnected.
+	    firebase.database().ref('.info/connected').on('value', function(snapshot) {
+	        // If we're not currently connected, don't do anything.
+	        if (snapshot.val() == false) {
+	            return;
+	        };
+
+	        // If we are currently connected, then use the 'onDisconnect()' 
+	        // method to add a set which will only trigger once this 
+	        // client has disconnected by closing the app, 
+	        // losing internet, or any other means.
+        	userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
+	            // The promise returned from .onDisconnect().set() will
+	            // resolve as soon as the server acknowledges the onDisconnect() 
+	            // request, NOT once we've actually disconnected:
+	            // https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect
+
+	            // We can now safely set ourselves as 'online' knowing that the
+	            // server will mark us as offline once we lose connection.
+	            userStatusDatabaseRef.set(isOnlineForDatabase);
+	        });
+	    });
+	    // [END rtdb_presence]
+	
+	}
+	
+	function nick_change(){
+		var newnick=prompt("변경할 닉네임을 입력해주세요",ws_usernick);
+		
+		if(newnick!=null){
+			data = {user_nick:newnick};
+			firebase.database().ref().child('users/anonymous/'+ws_userid).update(data);	
+		}
+		
+	}
 </script>
 
 </html>
+

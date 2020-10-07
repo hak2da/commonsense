@@ -29,7 +29,7 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   
-  var myName = prompt("enter your name"); 
+//   var myName = prompt("enter your name"); 
   
   function sendMessage(){
 	//get message
@@ -41,7 +41,7 @@
 		"message":message
 	});
 	
-	//   prevent form form submitting
+	//prevent form form submitting
 	return false;
   }
   
@@ -61,35 +61,53 @@
 		return false;
   }
   
+	function idtolisten(){
+		//get message
+		var message = document.getElementById("messaage3").value;
+		
+		//save in database
+//		firebase.database().ref("room").push().set({
+		firebase.database().ref("rooms").child('-MDsj3-zvrEBfADiJ4kn').push().set({
+			"sender":message,
+			"message":message			
+		});
+		
+		//   prevent form form submitting
+		return false;
+	}
+
+	firebase.database().ref("rooms").child('-MDsj3-zvrEBfADiJ4kn').on("child_added" , function(snapshot){
+		console.log(snapshot.val().message);
+	});
+  
   //listen for incoming messages
   firebase.database().ref("messages").on("child_added",function(snapshot){
 	 
-	 var html="";
+// 	 var html="";
 	 // give each message a unique ID
 	 
-	 html +="<li id='message-"+ snapshot.key+"'>";
-	 html +=snapshot.val().sender+ ": "+snapshot.val().message;
+// 	 html +="<li id='message-"+ snapshot.key+"'>";
+// 	 html +=snapshot.val().sender+ ": "+snapshot.val().message;
 	 
 	 //show delete button if message is sent by me
-	 if(snapshot.val().sender == myName){
-		 html += "<button data-id='"+snapshot.key+"' onclick='deleteMessage(this);'>";
-		 html += "Delete";
-		 html += "</button>";
-	 }
+// 	 if(snapshot.val().sender == myName){
+// 		 html += "<button data-id='"+snapshot.key+"' onclick='deleteMessage(this);'>";
+// 		 html += "Delete";
+// 		 html += "</button>";
+// 	 }
 	 
-	 html +="</li>";
+// 	 html +="</li>";
 	 
-	 document.getElementById("messages").innerHTML += html;
+// 	 document.getElementById("messages").innerHTML += html;
 	 
   });
-  
   
   //listen for incoming messages
   firebase.database().ref("messages/room").on("child_added",function(snapshot){
 	 
 // 	 snapshot.val().sender+ ": "+snapshot.val().message;
 
-	if(snapshot.val().message=="사과"){
+	if(snapshot.val().message=="사과"){ 
 		console.log("정답입니다.");
 	}
 	 
@@ -97,16 +115,7 @@
 	 
 	 
   });
-  
-  function deleteMessage(self){
-	  
-	  //get message ID
-	  var messageId = self.getAttribute("data-id");
-	  
-	  //delete message
-	  firebase.database().ref("messages").child(messageId).remove();
-	  
-  }
+ 
   
   //attach listener for delete message
   firebase.database().ref("messages").on("child_removed", function (snapshot){
@@ -133,11 +142,75 @@
 	 var mess = snapshot.val();
   });
   
+  function makeroom(){
+	  var roomName = prompt("typing room name"); 
+	//save in database
+	
+	firebase.database().ref("rooms").push().set({
+		"roomName":roomName
+	});
+	
+	//location.href="gameroom.html";
+  }
+  
+  //listen for incoming messages
+  firebase.database().ref("rooms").on("child_added",function(snapshot){
+	 
+	 var html="";
+	 // give each message a unique ID
+	 var roomId = String(snapshot.key);
+
+// 	 html +="<li data-id='"+snapshot.key+"' id='message-"+ snapshot.key+"'>";
+	 html +="<li id='message-"+ snapshot.key+"'>";
+	 html +=snapshot.val().roomName;
+	 html +="&nbsp&nbsp<input type='button' onclick=\"movetogameroom('"+roomId+"');\" value='방 입장'>";
+	 html +="&nbsp&nbsp<input type='button' data-id='"+roomId+"' onclick='deleteMessage(this);' value='방 삭제'>";
+	 
+	 
+	 //show delete button if message is sent by me
+// 	 if(snapshot.val().sender == myName){
+// 		 html += "<button data-id='"+snapshot.key+"' onclick='deleteMessage(this);'>";
+// 		 html += "Delete";
+// 		 html += "</button>";
+// 	 }
+	 
+	 html +="</li>";
+	 
+	 document.getElementById("messages").innerHTML += html;
+	 
+  });
+  
+//attach listener for delete message
+  firebase.database().ref("rooms").on("child_removed", function (snapshot){
+	 // remove message node
+	 document.getElementById("message-"+snapshot.key).innerHTML = "THIS room has been deleted";
+// 	 document.getElementById("message-"+snapshot.key).innerHTML = "";
+  });
+  
+	function movetogameroom(roomid){
+		
+		alert(roomid);
+	}
+	
+	function deleteMessage(self){
+		  
+		  //get message ID
+		  var messageId = self.getAttribute("data-id");
+		  
+		  //delete message
+		  firebase.database().ref("rooms").child(messageId).remove();
+		  
+	  }
+  
   
 </script>
 
 <!-- 상용버전, 속도와 용량이 최적화됨. -->
 <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+
+<form onsubmit="return makeroom();">
+	<input type="button" value="방만들기" onclick="return makeroom()">
+</form>
 
 <form onsubmit="return sendMessage();">
 	<input id="messaage" placeholder="Enter message" autocomplete="off">
@@ -147,6 +220,12 @@
 
 <form onsubmit="return sendMessage2();">
 	<input id="messaage2" placeholder="메시지 입력2" autocomplete="off">
+	
+	<input type="submit">
+</form>
+
+<form onsubmit="return idtolisten();">
+	<input id="messaage3" placeholder="id로 db업데이트" autocomplete="off">
 	
 	<input type="submit">
 </form>
