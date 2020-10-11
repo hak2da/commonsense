@@ -52,6 +52,11 @@
 	font-family: 'NanumBarunGothic';
 }
 
+.leftnbottom-shadow {
+	border-bottom: 1px outset #d2d2d2;
+	border-right: 1px outset #d2d2d2;
+}
+
 input {
 	-webkit-writing-mode: horizontal-tb !important;
 	text-rendering: auto;
@@ -93,7 +98,7 @@ input {
 	margin-top: 5px;
 	width: calc(100% - 82px);
 	height: 20px;
-	color:black;
+	color: black;
 }
 
 .waitroom_sendbutton {
@@ -142,6 +147,142 @@ input {
 	color: #999999;
 }
 
-.mycolor{
-	color:black;
+.mycolor {
+	color: black;
+}
+
+.room-box {
+	width: 100%;
+	text-align: center;
+	font-size: 20px;
+	font-weight: 600;
+	margin-top: 4%;
+}
+
+.hr-div {
+	width: 100%;
+	height: 1px;
+	display: flex;
+	justify-content: center;
+}
+
+.hr-line {
+	background-color: black;
+	width: 90%;
+	height: 100%;
+	border-top: 0.5px;
+}
+
+.roombox-statusbox-left {
+	float: left;
+	width: 30%;
+	margin-left: 10%;
+	line-height: 200%;
+	margin-top: 5%;
+}
+
+.invid-match-button {
+	margin-top: 18%;
+	background-color: #1abc9c;
+	width: 90%;
+	text-align: center;
+	vertical-align: middle;
+	color: white;
+	border-radius: 50px;
+	font-weight: bold;
+}
+
+.team-match-button {
+	margin-top: 18%;
+	background-color: #004aff;
+	width: 90%;
+	text-align: center;
+	vertical-align: middle;
+	color: white;
+	border-radius: 50px;
+	font-weight: bold;
+}
+
+.ingaming-button {
+	margin-top: 18%;
+	background-color: #e67e22;
+	width: 90%;
+	text-align: center;
+	vertical-align: middle;
+	color: white;
+	border-radius: 50px;
+	font-weight: bold;
+}
+
+.wating-button {
+	margin-top: 18%;
+	background-color: rgb(240, 210, 62);
+	width: 90%;
+	text-align: center;
+	vertical-align: middle;
+	color: white;
+	border-radius: 50px;
+	font-weight: bold;
+}
+
+.roombox-statusbox-right {
+	float: left;
+	width: 50%;
+	line-height: 200%;
+	margin-top: 5%;
+	margin-right: 10%;
+	text-align: right;
+}
+
+.host-status-text {
+	margin-top: 11%;
+	width: 90%;
+	text-align: right;
+	vertical-align: middle;
+	color: black;
+	font-weight: bold;
+}
+
+.numofmember-status-text {
+	margin-top: 11%;
+	width: 90%;
+	text-align: right;
+	vertical-align: middle;
+	color: black;
+	font-weight: bold;
+}
+
+.participate-div {
+	width: 100%;
+	height: 40%;
+	text-align: center;
+	font-size: 15px;
+	font-weight: bolder;
+	margin-top: 8%;
+	color: white;
+}
+
+.participate-button {
+	background-color: #3498db;
+	border-radius: 7px;
+	width: 40%;
+	height: 40%;
+	border: 0;
+	outline: 0;
+}
+
+.enterdenied-button {
+	background-color: #b1b7bb;
+	border-radius: 7px;
+	width: 40%;
+	height: 40%;
+	border: 0;
+	outline: 0;
+	cursor:default;
+}
+
+.enterdenied-img {
+	width: 25%;
+	height: 70%;
+	margin-bottom: 3%;
 }

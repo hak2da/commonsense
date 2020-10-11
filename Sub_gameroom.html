@@ -21,277 +21,626 @@
 <link rel="stylesheet" href="css/common/common.css">
 
 <!-- commonsense sub_gameroom.css -->
-<link rel="stylesheet" href="css/gameroomingame/Sub_gameroom.css">
+<link rel="stylesheet" href="css/sub_gameroom/Sub_gameroom.css">
 
- <!-- jQuery -->
-	<script src="js/jquery.min.js"></script>
-	<!-- jQuery Easing -->
-	<script src="js/jquery.easing.1.3.js"></script>
-	<!-- Bootstrap -->
-	<script src="js/bootstrap.min.js"></script>
-	<!-- Waypoints -->
-	<script src="js/jquery.waypoints.min.js"></script>
-	<!-- Main -->	
-	<script src="js/main.js"></script>
-	<!-- The core Firebase JS SDK is always required and must be listed first -->
-	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
-	
-	<!-- include firebase database -->
-	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+<!-- jQuery -->
+<script src="js/jquery.min.js"></script>
+<!-- jQuery Easing -->
+<script src="js/jquery.easing.1.3.js"></script>
+<!-- Bootstrap -->
+<script src="js/bootstrap.min.js"></script>
+<!-- Waypoints -->
+<script src="js/jquery.waypoints.min.js"></script>
+<!-- Main -->
+<script src="js/main.js"></script>
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
+
+<!-- include firebase database -->
+<script
+	src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+
+<!-- include commonsense firebase reference javascript -->
+<script src="js/firebase_initiate/firebase_initiate.js"></script>
 
 <meta charset="UTF-8">
 <title>Insert title here</title>
 </head>
 <body>
-<div id="wrapper">
-	<div id="menu-wrapper" style="height:100px;">
-		<div class="head-left">
-			<a href="Main_lobby.html"> 
-				<img src="img/Main_page/brain-physical-tp2.png" style="width:80%;margin-bottom:3%;"/>
-			</a>
-		</div>
-		<div class="head-right"> 
-			<div style="margin-top:5%;">
-				<font>레드매실님 환영함다!</font>
+	<div id="wrapper">
+		<div id="menu-wrapper" style="height: 100px;">
+			<div class="head-left">
+				<a href="Main_lobby.html"> <img
+					src="img/Main_page/brain-physical-tp2.png"
+					style="width: 80%; margin-bottom: 3%;" />
+				</a>
+			</div>
+			<div class="head-right">
+				<div style="margin-top: 5%;">
+					<font id="right_usernick"></font>
+				</div>
 			</div>
 		</div>
-	</div>
-<div>
-	<div id="adleft" class="adleft">
-	</div>
-	<div style="width:60%;float:left">
 		<div>
-		<button onclick="alert(1)" class="settingtool" style="margin-left:1.2%;background-image: url( 'img/sub_gameroom/setting.svg' );">
-			
-		</button>
-		</div>
-		<div id="RoomListBox" class="RoomListBox Product" style="position: relative;background-color:white;">
+			<div id="adleft" class="adleft"></div>
+			<div style="width: 60%; float: left">
+				<div>
+					<button onclick="alert(1)" class="settingtool"
+						style="margin-left: 1.2%; background-image: url( 'img/sub_gameroom/setting.svg' );">
 
-			<div style="width:100%;height:390px;">
-				<div class="product-title room-name" >방제 : 새로운방</div>
-				
-					<button onclick="gotowait()" class="product-title goout-button" >나가기</button>
-    				
-    				<button onclick="showanddissapear()" class="product-title " style="width:2%;border-top: 0px;
-    				border-left: 0.5px solid black;border-radius:0px 5px 5px 0px ; outline:0px;">1</button>
-				
-				<div class="product-body content-box" >
-					<div style="height:65%;width:100%;background-color:yellow;position:relative;">						
-						
-						<div class="content-genre">
-							장르 : 문화/예술
-						</div>
-						
-						<div class="content-quiz">
-							문제 : 종이, 인쇄물, 모래, 천 등등 여러가지를 붙여서 작품을 완성시키는  회화 기법
-							"풀로 붙이는 것"이라는 뜻의 미술용어이름은?
-						</div>
-						
-						<div class="limit-timebox">
-							<div class="limit-time-leftbox">
-								<img style="width:100%;height:100%;" src="img/sub_gameroom/time_limit.png">
+					</button>
+				</div>
+				<div id="RoomListBox" class="RoomListBox Product"
+					style="position: relative; background-color: white;">
+
+					<div style="width: 100%; height: 390px;">
+						<div class="product-title room-name">방제 : 새로운방</div>
+
+						<button onclick="gotowait()" class="product-title goout-button">나가기</button>
+
+						<button onclick="showanddissapear()" class="product-title "
+							style="width: 2%; border-top: 0px; border-left: 0.5px solid black; border-radius: 0px 5px 5px 0px; outline: 0px;">1</button>
+
+						<div class="product-body content-box">
+							<div
+								style="height: 65%; width: 100%; background-color: yellow; position: relative;">
+
+								<div class="content-genre">장르 : 문화/예술</div>
+
+								<div class="content-quiz">문제 : 종이, 인쇄물, 모래, 천 등등 여러가지를 붙여서
+									작품을 완성시키는 회화 기법 "풀로 붙이는 것"이라는 뜻의 미술용어이름은?</div>
+
+								<div class="limit-timebox">
+									<div class="limit-time-leftbox">
+										<img style="width: 100%; height: 100%;"
+											src="img/sub_gameroom/time_limit.png">
+									</div>
+									<div class="limit-time-rightbox">5초</div>
+								</div>
+
+								<div id="sysmsg" class="sysmsg"></div>
+
 							</div>
-							<div class="limit-time-rightbox">
-								5초
-							</div>
-						</div>
-						
-						<div id="sysmsg" class="sysmsg">
-						</div>
-						
-					</div>
-					<div style="height:35%;width:100%;background-color:none;">
-						
-						<div style="float:left;width:12%;height:100%;">
-							<img src="img/sub_gameroom/user.png" 
-							style="width:80%;height:80%;position:absoulute;margin-left:10%;margin-top:10%;">
-						</div>
-						
-<!-- 						레드매실로 작업 -->
-						<div style="float:left;width:12%;height:100%;">
-						
-						
-							<img src="img/sub_gameroom/user.png" 
-							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
-							
-							<img src="img/sub_gameroom/ready.svg" 
-							style="width:50%;height:40%;position:relative;left:30%;top:-35%;z-index:1;">
-							<div style="width:100%;position:relative;top: -36%;left: 30%;color:black;font-size:15px;">
-								레드매실
+							<div style="height: 35%; width: 100%; background-color: none;">
+								<span id="ingame_userlist"></span>
+								<!-- 레드매실로 작업 -->
+<!-- 								<div class="user-box"> -->
+<!-- 									<img src="img/sub_gameroom/user.png" class="user-img"> -->
+<!-- 									<div class="user-nick">master_011</div> -->
+<!-- 									<div id="-MFwiMzJAJmYmT11QSID-talkballon1" -->
+<!-- 										class="sub display-none" style="display: none;">master_011 -->
+<!-- 										: ㅁㄴㄹㅇ</div> -->
+<!-- 									<img src="img/sub_gameroom/crown.png" class="user-crown"> -->
+<!-- 								</div> -->
 							</div>
 
-							<div class="sub">
-								1231231231312313
-								12312312313123131231231231312313
-								1231231231
-							</div>
 						</div>
-						
-						<div style="float:left;width:12%;height:100%;">
-						
-						
-							<img src="img/sub_gameroom/user.png" 
-							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
-							
-							<img src="img/sub_gameroom/ready.svg" 
-							style="width:50%;height:40%;position:relative;left:30%;top:-35%;z-index:1;">
-							<div style="width:100%;position:relative;top: -36%;left: 30%;color:black;font-size:15px;">
-								레드매실
-							</div>
-							
-							<div class="sub">
-							123</div>
-						</div>
-						
-						<div style="float:left;width:12%;height:100%;">
-						
-						
-							<img src="img/sub_gameroom/user.png" 
-							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
-							
-							<img src="img/sub_gameroom/ready.svg" 
-							style="width:50%;height:40%;position:relative;left:30%;top:-35%;z-index:1;">
-							<div style="width:100%;position:relative;top: -36%;left: 30%;color:black;font-size:15px;">
-								레드매실
-							</div>
-							
-							<div class="sub">
-							123</div>
-						</div>
-						
-						<div style="float:left;width:12%;height:100%;">
-						
-						
-							<img src="img/sub_gameroom/user.png" 
-							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
-							
-							<img src="img/sub_gameroom/ready.svg" 
-							style="width:50%;height:40%;position:relative;left:30%;top:-35%;z-index:1;">
-							<div style="width:100%;position:relative;top: -36%;left: 30%;color:black;font-size:15px;">
-								레드매실
-							</div>
-							
-							<div id="sub_red1" class="sub" style="display:none;">
-							123</div>
-						</div>
-						
-						<div style="float:left;width:12%;height:100%;cursor:pointer;">						
-						
-							<img src="img/sub_gameroom/user.png" 
-							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
-							
-							<div style="width:100%;position:relative;top: 5%;left: 30%;color:black;font-size:15px;">
-								레드매실
-							</div>
-							<img src="img/sub_gameroom/crown.png" 
-							style="width:40%;height:40%;position:relative;left:14%;top:-50%;z-index:1;">
-							
-							
-						</div>
-						
 					</div>
-				
+					<div style="width: 100%; height: 230px;">
+						<div style="width: 80%; height: 100%;">
+
+							<div class="product-title">채팅</div>
+							<div id="chat-item-box" class="product-body" style="height: 75%;">
+								
+								<div class="chat-item" id="chat-item"></div>
+
+							</div>
+							<input id="usermsg_inputbox" class="usermsg_inputbox"
+								onkeyup="enterkey();" maxlength="200" autocomplete="off">
+							<!-- 					<button class="waitroom" onclick="showanddissapear_sub();" >전송</button> -->
+							<button class="gameroom_sendbutton" onclick="userchatting();">전송</button>
+
+						</div>
+						<div style="width: 20%; height: 100%;">
+							<button id="usrready_button" onclick="user_ready()" style="width: 100%; height: 100%;">준비</button>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div style="width:100%;height:230px;">
-				<div style="width:80%;height:100%;">
-				
-					<div class="product-title">채팅</div>
-					<div id="chatting_list" class="product-body" style="height:75%;">
-						<div class="chat-item"><div class="chat-head ellipse">정도혀</div><div class="chat-body">게</div><div class="chat-stamp">오전 2:32:32</div></div>
-					
-					</div>
-					<input id="UserMessage30755" maxlength="200" autocomplete="off" style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;">
-					<button class="waitroom" onclick="showanddissapear_sub();" >전송</button>
-				</div>
-				<div style="width:20%;height:100%;">
-					<button style="width:100%;height:100%;">준비</button>
-				</div>
+			<div id="adright" style="width: 20%; height: 500px; float: left">
 			</div>
 		</div>
 	</div>
-	<div id="adright" style="width:20%;height:500px;float:left">
-	</div>
-</div>
-</div>
 
-<!-- Modal -->
-   <!-- 방만들기 설정값 -->
-  <div  class="modal fade" id="roomSetting" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div style="width:400px;margin-left:40%; margin-top:8%; vertical-align:middle;" class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h3 style="font-weight: bold;text-align:center;" class="modal-title">방 설정</h3>
-        </div>
-        <div class="modal-body">
-          
-				제목 <input id="roomname" type="text" value="">
-				
-				<br><br>
-				게임 인원 &nbsp;<select name="job">
-				<option value=""> 선택</option>
-				<option value=""> 1</option>
-				<option value=""> 2</option>
-				<option value=""> 3</option>
-				</select>
-				
-				<br><br>
-				<input type="radio" name="group" checked="">개인전
-				<input type="radio" name="group">팀전
-				
-				<br><br>
-				
-				<input type="checkbox" name="chk_info" value="HTML">잠금설정 
-				<input type="text" value=""  placeholder="Enter password...">
-				
-				<br><br>
-        </div>
-        <div class="modal-footer">
-       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="makeroom_makeroom()">확인</button>
-          	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
+	<!-- Modal -->
+	<!-- 방만들기 설정값 -->
+	<div class="modal fade" id="roomSetting" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div
+				style="width: 400px; margin-left: 40%; margin-top: 8%; vertical-align: middle;"
+				class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h3 style="font-weight: bold; text-align: center;"
+						class="modal-title">방 설정</h3>
+				</div>
+				<div class="modal-body">
+
+					제목 <input id="roomname" type="text" value=""> <br> <br>
+					게임 인원 &nbsp;<select name="job">
+						<option value="">선택</option>
+						<option value="">1</option>
+						<option value="">2</option>
+						<option value="">3</option>
+					</select> <br> <br> <input type="radio" name="group" checked="">개인전
+					<input type="radio" name="group">팀전 <br> <br> <input
+						type="checkbox" name="chk_info" value="HTML">잠금설정 <input
+						type="text" value="" placeholder="Enter password..."> <br>
+					<br>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal"
+						onclick="makeroom_makeroom()">확인</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
 
 </body>
 <script>
-function makeroom_roomsetting(){	
-	 $("#roomSetting").modal();
-}
-
-function gotowait(){
-	location.href="Sub_waitingroom.html";
-}
-
-function showanddissapear(){
-	$("#sysmsg").text("123");
-	$("#sysmsg").css("display","inline");
-	$("#sysmsg").fadeIn();
-	setTimeout(function(){$("#sysmsg").fadeOut()},1000);
-
-}
-
-function showanddissapear_sub(){
-	$("#sub_red1").text("123");
-	$("#sub_red1").css("display","inline");
-	$("#sub_red1").fadeIn();
-	setTimeout(function(){$("#sub_red1").fadeOut()},1000);
-
-}
-
-
-window.onload = function(){
+	function makeroom_roomsetting(){	
+		 $("#roomSetting").modal();
+	}
 	
+	function gotowait(){
+		location.href="Sub_waitingroom.html";
+	}
 	
-}
-
-
+	function showanddissapear(){
+		$("#sysmsg").text("123");
+		$("#sysmsg").css("display","inline");
+		$("#sysmsg").fadeIn();
+		setTimeout(function(){$("#sysmsg").fadeOut()},1000);
+	
+	}
+	
+	function showanddissapear_sub(){
+		$("#sub_red1").text("123");
+		$("#sub_red1").css("display","inline");
+		$("#sub_red1").fadeIn();
+		setTimeout(function(){$("#sub_red1").fadeOut()},1000);
+	}
+	
 
 </script>
 
+<script>
+'use strict';
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//<<<<<<<<<<<<		firebase	<<<<<<<<<<<<<<<<<
+//default setting,variable declare start
+
+
+//gamehost:방장
+var roomid,userid,user_nick,gamestatus=false,gamehost_isme=false,gamehostid,kickout=false;
+var anstry_Interval;
+var userlist;
+var userreadycount;
+var userStatusDatabaseRef;
+var user_readybool = false;
+
+var userstatusRef;//게임룸에 데이터넣을때 user key값
+
+var answer_arr;//게임에서 정답배열을 저장할 객체
+
+window.onload = function(){
+	//window onload start
+	roomid = localStorage.getItem('roomid');
+  	userid = localStorage.getItem('userid');
+  	user_nick = localStorage.getItem('usernick');
+  	
+  	$("#right_usernick").text(user_nick+"님 환영합니다!");
+  	
+  	if(roomid==null||userid==null||user_nick==null){
+		 alert("사용자 데이터가 없습니다.");
+		 kickout=true;
+		 location.href="Sub_waitingroom.html";
+ 	}
+  	
+  //default setting,variable declare end	
+}
+
+</script>
+
+<script>
+//common javascript start
+async function gethostid(){
+  	var value;
+ 	await firebase.database().ref('/rooms/'+ roomid+'/setting/gamehostid').once('value').then(function(snapshot){
+		value =snapshot.val();
+	});
+ 	return value;
+}
+//common javascript end
+</script>
+
+
+<script>
+//userlist related javascript start
+
+	var userlist_winonload = window.onload;	
+	window.onload = function(){
+		userlist_winonload();//window onload를 여러번 사용하기 위함
+		firebase.database().ref('/rooms/'+roomid+'/users').on("value",function(snapshot){
+			erasetouserlist();
+		  	userlist = snapshot.val();
+		  	userreadycount=0;
+		  	
+		  	var gamehost_exist=false;
+		  	
+			for(var key in userlist){
+				var user = 	userlist[key];
+				
+				user.ready ? userreadycount++ : 0;
+				console.log("gamehostid",gamehostid);
+				console.log("user.user_id",user.user_id);
+				console.log("gamehostid",gamehostid);
+				console.log("\n");
+				
+				if(gamehostid!=null && user.user_id==gamehostid ){//만약 userlist의 status가 host면 그대로 표시
+					
+// 					pushtouserlist(user.user_nick+' / 방장');
+					$("#ingame_userlist").append(make_hostdiv(user.user_nick,user.user_id));
+					
+					if(user.status!="host"){
+						firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+							status : "host"
+					  	});
+					}
+					gamehost_exist=true;
+
+				}else{
+					var userdata=user.user_nick+' / '+ (user.ready ? '준비완료':'대기중');
+					if(gamehost_isme) {
+						userdata+= "<button onclick=\"delegate_gamehost('"+user.user_id+"')\">방장</button>";
+						userdata+= "<button onclick=\"kickout_member('"+user.user_id+"','"+user.user_nick+"','"+key+"')\">강퇴</button>";
+					}
+					
+					$("#ingame_userlist").append(make_memberdiv(user.user_nick,user.ready,user.user_id,key));
+// 					pushtouserlist(userdata);	
+				}
+		  	};
+		  	
+		  	if(userlist!=null){
+		  		gamehost_manager(userlist,gamehost_exist);
+		  	}
+		  	
+		  });
+	}
+	
+	function make_hostdiv(hostnick,hostid){
+		var hostref="";
+		hostref+="<div class=\"user-box\">";
+		hostref+="<img src=\"img/sub_gameroom/user.png\" class=\"user-img\">";
+		hostref+="<div class=\"user-nick\">";
+		hostref+=hostnick;
+		hostref+="</div>";
+		hostref+="<div id=\""+hostid+"-talkballon\" class=\"sub display-none\"></div>";
+		hostref+="<img src=\"img/sub_gameroom/crown.png\" class=\"user-crown\"></div>";
+		
+		return hostref; 
+	}
+	
+	function make_memberdiv(nick,ready,id,key){
+		var memberref="";
+		memberref+="<div class=\"user-box\">";
+		memberref+="<img src=\"img/sub_gameroom/user.png\" class=\"user-img\">";
+		memberref+="<div class=\"user-nick\">";
+		memberref+=nick;
+		memberref+="</div>";
+		memberref+="<div id=\""+id+"-talkballon\" class=\"sub display-none\"></div>";
+		if(ready) memberref+="<img src=\"img/sub_gameroom/ready.svg\" class=\"user-ready\">";
+		memberref+="</div>"
+		
+		return memberref; 
+	}
+
+	function erasetouserlist(){
+		$("#ingame_userlist").html("");
+	}
+	
+	function pushtouserlist(txt){
+		$("#ingame_userlist").append(txt);
+	}
+	
+	async function getmyroomuserdata(){
+		var value;  
+	
+		await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).once('value').then(function(snapshot){
+			value = snapshot.val();
+		});
+		return value;
+	}
+	async function getuserlist(){
+		var value;
+		await firebase.database().ref('/rooms/' + roomid+'/users').once('value').then(function(snapshot){
+			value= snapshot.val();
+		});
+		return value;
+	}
+	  
+
+	async function gamehost_manager(userlist,gamehost_exist){
+		  var roomhost;
+	
+		  //user 대기목록 나혼자일때
+		  if(Object.keys(userlist).length==1 && !gamehost_exist){
+			  
+		  	var myroomuserdata;
+		  	await getmyroomuserdata().then(result=> myroomuserdata = result);		
+			
+			if(myroomuserdata!=null && myroomuserdata.status=='member'){
+				
+				setTimeout(async function(){
+					var local_userlist;
+					
+					await getuserlist().then(result => local_userlist = result); //settimeout의 시간이 지난뒤 userlist를 가져옴
+					
+					//1인혼자 남은 인원의 id랑 setting의 gamehost의 id가 같지 않다면 setting의 gamehostid를 1인의 id로 수정			
+					await getmyroomuserdata().then(result=> myroomuserdata = result);	
+				
+					if(local_userlist!=null && Object.keys(local_userlist).length==1 && myroomuserdata.status=='member'){
+							
+						//host값을 신경써야되서 봐야함
+						await firebase.database().ref('rooms/'+roomid+'/setting').update({
+							gamehostid : userid
+					  	});
+						
+						await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+							status : "host"
+					  	});
+						
+					}
+				},1500);
+			}
+			
+			// rooms에  hostid가 있고 
+			// member중에 host인 사람의 id가 있는데 
+			// host value가 아닐때 hostvalue로 바꿔줌
+		  }else if(Object.keys(userlist).length==1 && !gamehost_exist){
+			  var hostid;
+			  await gethostid().then(result => hostid = result);
+			  if(userid==hostid){
+				firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+					status : "host"
+				});
+			  }
+			//rooms ingame에 사람은 1명이상이고  gamehost는 존재하지않을때 새로운 host지정
+		  }else if(Object.keys(userlist).length > 1 && !gamehost_exist){
+			setTimeout(async function(){
+				
+			  	var local_userlist,local_gamehostid;
+			  	var local_gamehostexist=false;
+			  	
+				await getuserlist().then(result => local_userlist = result); //settimeout의 시간이 지난뒤 userlist를 가져옴
+				if(local_userlist==null) return;
+				
+				await gethostid().then(result => local_gamehostid = result);
+				
+				var spare_host;
+				for (var key in local_userlist) {
+					var user = 	local_userlist[key];
+					
+					if(local_gamehostid==user.user_id){
+						local_gamehostexist= true;
+						break;
+					}else{
+						if(spare_host==null) spare_host=user;
+						else if(spare_host.connect_time > user.connect_time) spare_host=user; 
+					}
+					
+				}
+	
+				if(!local_gamehostexist && spare_host!=null && userid == spare_host.user_id){
+					
+					//host값을 신경써야되서 봐야함
+					await firebase.database().ref('rooms/'+roomid+'/setting').update({
+						gamehostid : userid
+				  	});
+					
+					await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+						status : "host"
+				  	});
+				}
+				
+				
+			},2000);
+			  
+		  }else{
+	//		  console.log("else");
+		  }		
+		  
+	}
+
+//userlist related javascript end
+</script>
+
+<script>
+	// room & game setting related javascript start
+	var rngsetting_winonload = window.onload;	
+	window.onload = function(){
+		rngsetting_winonload();//window onload를 여러번 사용하기 위함
+		//방제 바꿔주는 리스너메서드 
+		firebase.database().ref("rooms/"+roomid+"/setting/gamehostid").on("value",function(snapshot){
+			gamehost_isme = snapshot.val() == userid ? true : false;
+			gamehost_isme ? setsettinggamehostnick() :"";
+			gamehostid=snapshot.val();
+		});
+		
+		function setsettinggamehostnick(){
+			firebase.database().ref('rooms/'+roomid+'/setting/').update({
+				gamehostnick : user_nick
+			});
+		}
+	}
+	// room & game setting related javascript end
+</script>
+
+<script>
+//connect status related javascript start
+	 
+	var connectstatus_winonload = window.onload;	
+	window.onload = function(){
+		connectstatus_winonload();//window onload를 여러번 사용하기 위함
+		// Create a reference to this user's specific status node.
+		// This is where we will store data about being online/offline.
+	  
+		userstatusRef = firebase.database().ref('/rooms/' + roomid+'/users').push({});
+		localStorage.setItem("userstatusRef_key",	userstatusRef.key);
+		
+		userStatusDatabaseRef = firebase.database().ref('/rooms/' + roomid+'/users/'+userstatusRef.key);
+		
+		var isOfflineForDatabase = {
+//	 		  status: 'member',
+//	 	      ready: false,
+//	 	      user_id : userid,
+//	 	      user_nick : user_nick,
+//	 	      connect_time: firebase.database.ServerValue.TIMESTAMP
+ 		};
+		 
+		var isOnlineForDatabase = {
+		    status: 'member',
+		    ready: false,
+		    user_id : userid,
+		    user_nick : user_nick,
+		    connect_time: firebase.database.ServerValue.TIMESTAMP
+		};
+		
+		firebase.database().ref('.info/connected').on('value', function(snapshot) {
+		    // If we're not currently connected, don't do anything.
+		    if (snapshot.val() == false) {
+		        return;
+		    };
+		
+		
+			userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
+		
+		        var statusRef = userStatusDatabaseRef.set(isOnlineForDatabase);
+		    });
+		});
+		// [END rtdb_presence]		
+	}
+		
+	
+//connect status related javascript end
+</script>
+
+<script>
+//chatting related javascript start
+	var chatting_winonload = window.onload;
+	window.onload = function(){
+		chatting_winonload();//window onload를 두번 사용하기 위함
+		
+		var talkballonobj={};
+		
+		firebase.database().ref("rooms/"+roomid+"/chatting").on("value",function(snapshot){
+			if(snapshot.val()==null) return;
+			
+			var mycolor="";
+			if(snapshot.val().chat_user_id==userid){
+				mycolor="mycolor";
+			}
+			
+			$("#chat-item").append("<div class=\"chat-head ellipse "+mycolor+"\">"+snapshot.val().chat_user_nick+"</div>");
+			$("#chat-item").append("<div class=\"chat-body "+mycolor+"\">"+snapshot.val().chatcontent+"</div>");
+			$("#chat-item").append("<div class=\"chat-stamp "+mycolor+"\">"+gettime()+"</div>");
+			
+			$("#chat-item-box").scrollTop($("#chat-item-box")[0].scrollHeight);
+			
+			var userid_local= "#"+snapshot.val().chat_user_id+"-talkballon";
+			var chat_content_local = snapshot.val().chat_user_nick+" : "+snapshot.val().chatcontent;
+			$(userid_local).css("display","inline");
+			$(userid_local).text(chat_content_local);
+			
+			//말풍선 시간지나면 사라지기 
+			clearTimeout(talkballonobj[snapshot.val().chat_user_id]);//it's work!
+			talkballonobj[snapshot.val().chat_user_id] = setTimeout(function(){
+				$(userid_local).css("display","none");
+			},2000);
+			
+		//		var chat= snapshot.val().chat_user_nick+" : "+snapshot.val().chatcontent;
+		//		pushtochat(chat);	
+		});
+	}
+
+
+	function enterkey() {
+	    if (window.event.keyCode == 13) {
+	    	userchatting();
+	    }
+	}
+	
+	function userchatting(){
+		var userchatting = $('#usermsg_inputbox').val();
+		
+		if(userchatting==null||userchatting=="")return;
+		$('#usermsg_inputbox').val('');
+		
+		//save in database
+		firebase.database().ref("rooms/"+roomid+"/chatting").set({
+			"chatcontent" : userchatting,
+			"chat_user_nick" : user_nick,
+			"chat_user_id" : userid
+		});
+		
+		firebase.database().ref("rooms/"+roomid+"/chatting").set({
+		});
+	}
+	
+	function gettime(){
+		let today = new Date();   
+	
+		let hours = today.getHours(); // 시
+		let minutes = today.getMinutes();  // 분
+		let seconds = today.getSeconds();  // 초
+		let ampm="";
+		if(hours>12){
+			hours-=12;
+			ampm="오후";
+		}else{
+			ampm="오전";
+		}
+		 
+		minutes = minutes.toString().length==1 ? "0"+minutes : minutes;
+		seconds = seconds.toString().length==1 ? "0"+seconds : seconds;
+		
+		return ampm+" "+hours+":"+minutes+":"+seconds;
+	}
+//chatting related javascript end
+</script>
+
+<script>
+//userstatus related javascript start
+//ingame user handler
+
+	
+	function user_ready(){
+		if(!user_readybool){
+			$('#usrready_button').text('준비취소');
+			user_readybool = true;
+			setuserreadystatus(true);
+		}else{
+			$('#usrready_button').text('준비');
+			user_readybool = false;
+			setuserreadystatus(false);
+		}
+	}
+	
+	function setuserreadystatus(readybool){
+		var userstatus_key = localStorage.getItem('userstatusRef_key');
+		firebase.database().ref('/rooms/'+roomid+'/users/'+userstatus_key).update({
+			ready : readybool
+		});
+	}
+	 
+//userstatus related javascript end
+</script>
+
 </html>
+

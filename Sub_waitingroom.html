@@ -69,50 +69,45 @@
 		<div id="RoomListBox" class="RoomListBox Product">
 			<div style="width:20%;">
 				<div class="product-title">접속자 목록</div>
-				<div class="product-body" id="user_list">
+				<div class="product-body leftnbottom-shadow" id="user_list">
 				</div>
 				
 			</div>
 			<div style="width:80%;height:500px;">
 				<div class="product-title">방 목록</div>
-				<div class="product-body" style="height:60%;">
-								<div id="room-343" class="rooms-item rooms-gaming rooms-locked">
-								
-								<div style="width:100%;text-align:center;font-size:20px;font-weight:600;margin-top:4%;">
-								<span>titleㅎㅇ</span>
-								
-								<div style="width:100%;height:1px;display:flex;justify-content:center;">
-									<hr style="background-color:black;width:90%;height:100%;border-top:0.5px;">
-								</div>
-								</div>
+				<div class="product-body leftnbottom-shadow" style="height:60%;">
+				
+								<span id="rooms-list"></span>
+								<div class="rooms-item rooms-gaming rooms-locked">
+									<div class="room-box">
+										<span>titleㅎㅇ</span>
+										<div class="hr-div">
+											<hr class="hr-line">
+										</div>
+									</div>
 									
-									<div style="float:left;width:30%;margin-left:10%;line-height:200%;margin-top:5%; ">
-										<div style="margin-top:18%;background-color:#1abc9c;width:90%;text-align:center;vertical-align:middle;
-											color:white;border-radius:50px;font-weight:bold;">
+									<div class="roombox-statusbox-left">
+										<div class="invid-match-button">
 										개인전</div>
 										
-										<div style="margin-top:18%;background-color:#e67e22;width:90%;text-align:center;vertical-align:middle;
-											color:white;border-radius:50px;font-weight:bold;">
+										<div class="ingaming-button">
 										게임중</div>
 									</div>
 									
-									<div style="float:left;width:50%;line-height:200%;margin-top:5%; margin-right:10%;text-align:right;">
-										
-										<div style="margin-top:11%;width:90%;text-align:right;vertical-align:middle;
-											color:black;font-weight:bold;">
+									<div class="roombox-statusbox-right">
+										<div class="host-status-text">
 										방장:레드매실님</div>
 										
-										<div style="margin-top:11%;width:90%;text-align:right;vertical-align:middle;
-											color:black;font-weight:bold;">
+										<div class="numofmember-status-text">
 										방 인원:2/6</div>
 									</div>
 									
-									<div style="width:100%;height:40%;text-align:center;font-size:15px;font-weight:bolder;margin-top:8%;color:white;">
-										<button onclick="goingame();" style="background-color:#3498db;border-radius:7px;width:40%;height:40%;border:0;outline:0;">참가하기</button>
+									<div class="participate-div">
+										<button onclick="goingame();" class="participate-button">참가하기</button>
 									</div>
 								</div>
 								
-								<div id="room-343" class="rooms-item rooms-gaming rooms-locked">
+								<div class="rooms-item rooms-gaming rooms-locked">
 								
 								<div style="width:100%;text-align:center;font-size:20px;font-weight:600;margin-top:4%;">
 								<img src="img/sub_gameroom/lock.png" style="width:8%;height:8%;"/>
@@ -123,12 +118,10 @@
 								</div>
 								
 									<div style="float:left;width:30%;margin-left:10%;line-height:200%;margin-top:5%; ">
-										<div style="margin-top:18%;background-color:#004aff;width:90%;text-align:center;vertical-align:middle;
-											color:white;border-radius:50px;font-weight:bold;">
+										<div class="team-match-button">
 										팀전</div>
 										
-										<div style="margin-top:18%;background-color:rgb(240 210 62);width:90%;text-align:center;vertical-align:middle;
-											color:white;border-radius:50px;font-weight:bold;">
+										<div class="wating-button">
 										대기중</div>
 									</div>
 									
@@ -144,13 +137,16 @@
 									</div>
 									
 									<div style="width:100%;height:40%;text-align:center;font-size:15px;font-weight:bolder;margin-top:8%;color:white;">
-										<button style="background-color:#3498db;border-radius:7px;width:40%;height:40%;border:0;outline:0;">참가하기</button>
+									
+										<button class="enterdenied-button">
+										<img class="enterdenied-img" src="img/sub_waitingroom/denied.png"/>
+										참가불가</button>
 									</div>
 								</div>
 								
 						</div>
 				<div class="product-title">채팅</div>
-				<div class="product-body" id="chat-item-box" style="height:35%;">
+				<div class="product-body leftnbottom-shadow" id="chat-item-box" style="height:35%;">
 					<div class="chat-item" id="chat-item">
 					</div>
 				</div>
@@ -167,58 +163,39 @@
 </div>
 </div>
 
-<!-- Modal -->
-   <!-- 방만들기 설정값 -->
-  <div  class="modal fade" id="roomSetting" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div style="width:400px;margin-left:40%; margin-top:8%; vertical-align:middle;" class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>
-          <h3 style="font-weight: bold;text-align:center;" class="modal-title">방 설정</h3>
-        </div>
-        <div class="modal-body">
-          
-				제목 <input id="roomname" type="text" value="">
-				
-				<br><br>
-				게임 인원 &nbsp;<select name="job">
-				<option value=""> 선택</option>
-				<option value=""> 1</option>
-				<option value=""> 2</option>
-				<option value=""> 3</option>
-				</select>
-				
-				<br><br>
-				<input type="radio" name="group" checked="">개인전
-				<input type="radio" name="group">팀전
-				
-				<br><br>
-				
-				<input type="checkbox" name="chk_info" value="HTML">잠금설정 
-				<input type="text" value=""  placeholder="Enter password...">
-				
-				<br><br>
-        </div>
-        <div class="modal-footer">
-       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="makeroom_makeroom()">확인</button>
-          	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
-        </div>
-      </div>
-      
-    </div>
-  </div>
-
 </body>
 <script>
 function goingame(){
-	location.href="Sub_gameroom.html";
+	location.href="Sub_gameroom_design.html";
 }
 
-function makeroom_roomsetting(){	
+function makeroom_roomsetting(){
 	 $("#roomSetting").modal();
-	 
+}
+
+async function enter_game(roomid){
+	let limitofmember_local;
+	let usersnum_local;
+	let gamestatus_local;
+	
+	await firebase.database().ref('rooms/'+roomid+'/setting/limitofmember').once('value').then(function(snapshot){
+		limitofmember_local = snapshot.val();
+	});
+	
+	await firebase.database().ref('rooms/'+roomid+'/users').once('value').then(function(snapshot){
+		usersnum_local =snapshot.val()==null ? 0 : parseInt(Object.keys(snapshot.val()).length); 
+	});
+	
+	await firebase.database().ref('rooms/'+roomid+'/ongame/gamestatus').once('value').then(function(snapshot){
+		gamestatus_local = snapshot.val();
+	});
+	
+	if(gamestatus_local=="waiting_status"&& usersnum_local<parseInt(limitofmember_local)){
+		localStorage.setItem('roomid', roomid);
+		location.href="Sub_gameroom.html";	
+	}else{
+		alert("enter denied");	
+	}
 }
 
 </script>
@@ -297,8 +274,58 @@ function makeroom_roomsetting(){
 		
 	}
 	
+	  firebase.database().ref("rooms").on("value",function(snapshot){
+		  
+		  let roomlist=snapshot.val();
+		  $("#rooms-list").html("");
+		  
+		  for(key in roomlist){
+			  let roomref =roomlist[key];
+			  let divcont ="";
+			  
+			  divcont+=("<div class=\'rooms-item rooms-gaming rooms-locked\'>");
+			  divcont+=("<div class=\"room-box\">");
+			  divcont+=("<span>"+roomref.setting.roomName+"</span>");
+			  divcont+=("<div class=\"hr-div\">");
+			  divcont+=("<div class=\"hr-line\">");
+			  divcont+=("</div></div></div>");
+			  divcont+=("<div class=\"roombox-statusbox-left\">");
+			  divcont+=("<div class=\"invid-match-button\">개인전</div>");
+			  
+			  let gamestatus = roomref.ongame.gamestatus=="waiting_status" ? "wating-button" :"ingaming-button"; 
+			  let gamestatus_txt=roomref.ongame.gamestatus=="waiting_status" ? "대기중" : "게임중"; 
+			  
+			  divcont+=("<div class=\""+gamestatus+"\">"+gamestatus_txt+"</div>");
+			  divcont+=("</div>");
+			  divcont+=("<div class=\"roombox-statusbox-right\">");
+			  divcont+=("<div class=\"host-status-text\">");
+			  divcont+=("방장:"+roomref.setting.gamehostnick);
+			  divcont+=("</div>");
+			  divcont+=("<div class=\"numofmember-status-text\">");
+			  divcont+=("방 인원:");
+			  
+			  let numofmember = roomref.users==null ? 0 : Object.keys(roomref.users).length;
+			  let limitofmember = roomref.setting.limitofmember==null ? 0 : roomref.setting.limitofmember;
+			  
+			  divcont+=(numofmember+"/"+limitofmember);
+			  divcont+=("</div></div>");
+			  divcont+=("<div class=\"participate-div\">");
+			  
+			  if(gamestatus_txt=="대기중"&&parseInt(numofmember)<parseInt(limitofmember)){
+				  divcont+=("<button onclick=\"enter_game('"+key+"');\" class=\"participate-button\">참가하기</button>");
+			  }else{
+				  divcont+=("<button class=\"enterdenied-button\">");
+				  divcont+=("<img class=\"enterdenied-img\" src=\"img/sub_waitingroom/denied.png\"/>");
+				  divcont+=("참가불가</button>");
+			  }
+			  divcont+=("</div></div>");
+			  
+			  $("#rooms-list").append(divcont);
+		  }
+	  });
+	
 	firebase.database().ref("orig_server/waitingroom/userlist").on("value",function(snapshot){
-		  $("#user_list").html("");		  
+		  $("#user_list").html("");
 		  var userlist = snapshot.val();
 		  for(key in userlist){
 			  $("#user_list").append("<div class=\"users-name ellipse\">"+userlist[key].user_nick+"</div>");
@@ -336,7 +363,6 @@ function makeroom_roomsetting(){
 			mycolor="mycolor";
 		}
 		
-		
 		$("#chat-item").append("<div class=\"chat-head ellipse "+mycolor+"\">"+snapshot.val().chat_user_nick+"</div>");
 		$("#chat-item").append("<div class=\"chat-body "+mycolor+"\">"+snapshot.val().chatcontent+"</div>");
 		$("#chat-item").append("<div class=\"chat-stamp "+mycolor+"\">"+gettime()+"</div>");
@@ -363,7 +389,6 @@ function makeroom_roomsetting(){
 		
 		return ampm+" "+hours+":"+minutes+":"+seconds;
 	}
-	
 	
 </script>
 

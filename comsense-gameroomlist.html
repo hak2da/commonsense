@@ -46,11 +46,14 @@
 				제목 <input id="roomname" type="text" value="">
 				
 				<br><br>
-				게임 인원 &nbsp;<select name="job">
-				<option value=""> 선택</option>
-				<option value=""> 1</option>
-				<option value=""> 2</option>
-				<option value=""> 3</option>
+				게임 인원 &nbsp;<select name="limitofmember" id="limitofmember">
+				<option value="4"> 4</option>
+				<option value="5"> 5</option>
+				<option value="6"> 6</option>
+				<option value="7"> 7</option>
+				<option value="8"> 8</option>
+				
+				
 				</select>
 				
 				<br><br>
@@ -325,9 +328,13 @@
 	firebase.database().ref('rooms/'+roomref.key+'/setting').update({
 		"roomName" : roomName,
 		"time_limit" : 10,
-		"gameround" : 3 
+		"gameround" : 3,
+		"limitofmember" : $("#limitofmember option:selected").val()
   	});
-
+	
+	firebase.database().ref('rooms/'+roomref.key+'/ongame').update({
+		gamestatus:"waiting_status"
+	});
   }
 
 </script>

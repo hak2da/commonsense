@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+
+<!-- Animate.css -->
+<link rel="stylesheet" href="css/animate.css">
+<!-- Icomoon Icon Fonts-->
+<link rel="stylesheet" href="css/icomoon.css">
+<!-- Bootstrap  -->
+<link rel="stylesheet" href="css/bootstrap.css">
+
+<!-- Theme style  -->
+<link rel="stylesheet" href="css/bootstrapmin.css">
+
+<link rel="stylesheet" href="css/Main_page/react_button.css">
+
+<link rel="stylesheet" href="css/common/react_style.css">
+
+<!-- commonsense common.css -->
+<link rel="stylesheet" href="css/common/common.css">
+
+<!-- commonsense sub_gameroom.css -->
+<link rel="stylesheet" href="css/gameroomingame/Sub_gameroom.css">
+
+ <!-- jQuery -->
+	<script src="js/jquery.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="js/bootstrap.min.js"></script>
+	<!-- Waypoints -->
+	<script src="js/jquery.waypoints.min.js"></script>
+	<!-- Main -->	
+	<script src="js/main.js"></script>
+	<!-- The core Firebase JS SDK is always required and must be listed first -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
+	
+	<!-- include firebase database -->
+	<script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-database.js"></script>
+
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<div id="wrapper">
+	<div id="menu-wrapper" style="height:100px;">
+		<div class="head-left">
+			<a href="Main_lobby.html"> 
+				<img src="img/Main_page/brain-physical-tp2.png" style="width:80%;margin-bottom:3%;"/>
+			</a>
+		</div>
+		<div class="head-right"> 
+			<div style="margin-top:5%;">
+				<font>레드매실님 환영함다!</font>
+			</div>
+		</div>
+	</div>
+<div>
+	<div id="adleft" class="adleft">
+	</div>
+	<div style="width:60%;float:left">
+		<div>
+		<button onclick="alert(1)" class="settingtool" style="margin-left:1.2%;background-image: url( 'img/sub_gameroom/setting.svg' );">
+			
+		</button>
+		</div>
+		<div id="RoomListBox" class="RoomListBox Product" style="position: relative;background-color:white;">
+
+			<div style="width:100%;height:390px;">
+				<div class="product-title room-name" >방제 : 새로운방</div>
+				
+					<button onclick="gotowait()" class="product-title goout-button" >나가기</button>
+    				
+    				<button onclick="showanddissapear()" class="product-title " style="width:2%;border-top: 0px;
+    				border-left: 0.5px solid black;border-radius:0px 5px 5px 0px ; outline:0px;">1</button>
+				
+				<div class="product-body content-box" >
+					<div style="height:65%;width:100%;background-color:yellow;position:relative;">						
+						
+						<div class="content-genre">
+							장르 : 문화/예술
+						</div>
+						
+						<div class="content-quiz">
+							문제 : 종이, 인쇄물, 모래, 천 등등 여러가지를 붙여서 작품을 완성시키는  회화 기법
+							"풀로 붙이는 것"이라는 뜻의 미술용어이름은?
+						</div>
+						
+						<div class="limit-timebox">
+							<div class="limit-time-leftbox">
+								<img style="width:100%;height:100%;" src="img/sub_gameroom/time_limit.png">
+							</div>
+							<div class="limit-time-rightbox">
+								5초
+							</div>
+						</div>
+						
+						<div id="sysmsg" class="sysmsg">
+						</div>
+						
+					</div>
+					<div style="height:35%;width:100%;background-color:none;">
+						
+						<div style="float:left;width:12%;height:100%;">
+							<img src="img/sub_gameroom/user.png" 
+							style="width:80%;height:80%;position:absoulute;margin-left:10%;margin-top:10%;">
+						</div>
+						
+<!-- 						레드매실로 작업 -->
+						<div style="float:left;width:12%;height:100%;">
+						
+						
+							<img src="img/sub_gameroom/user.png" 
+							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
+							
+							<img src="img/sub_gameroom/ready.svg" 
+							style="width:50%;height:40%;position:relative;left:30%;top:-35%;z-index:1;">
+							<div style="width:100%;position:relative;top: -36%;left: 30%;color:black;font-size:15px;">
+								레드매실
+							</div>
+
+							<div class="sub">
+								1231231231312313
+								12312312313123131231231231312313
+								1231231231
+							</div>
+						</div>
+						
+						<div style="float:left;width:12%;height:100%;">
+						
+						
+							<img src="img/sub_gameroom/user.png" 
+							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
+							
+							<img src="img/sub_gameroom/ready.svg" 
+							style="width:50%;height:40%;position:relative;left:30%;top:-35%;z-index:1;">
+							<div style="width:100%;position:relative;top: -36%;left: 30%;color:black;font-size:15px;">
+								레드매실
+							</div>
+							
+							<div class="sub">
+							123</div>
+						</div>
+						
+						<div style="float:left;width:12%;height:100%;">
+						
+						
+							<img src="img/sub_gameroom/user.png" 
+							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
+							
+							<img src="img/sub_gameroom/ready.svg" 
+							style="width:50%;height:40%;position:relative;left:30%;top:-35%;z-index:1;">
+							<div style="width:100%;position:relative;top: -36%;left: 30%;color:black;font-size:15px;">
+								레드매실
+							</div>
+							
+							<div class="sub">
+							123</div>
+						</div>
+						
+						<div style="float:left;width:12%;height:100%;">
+						
+						
+							<img src="img/sub_gameroom/user.png" 
+							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
+							
+							<img src="img/sub_gameroom/ready.svg" 
+							style="width:50%;height:40%;position:relative;left:30%;top:-35%;z-index:1;">
+							<div style="width:100%;position:relative;top: -36%;left: 30%;color:black;font-size:15px;">
+								레드매실
+							</div>
+							
+							<div id="sub_red1" class="sub" style="display:none;">
+							123</div>
+						</div>
+						
+						<div style="float:left;width:12%;height:100%;cursor:pointer;">						
+						
+							<img src="img/sub_gameroom/user.png" 
+							style="width:80%;height:80%;position:relative;left:10%;top:10%;z-index:0;">
+							
+							<div style="width:100%;position:relative;top: 5%;left: 30%;color:black;font-size:15px;">
+								레드매실
+							</div>
+							<img src="img/sub_gameroom/crown.png" 
+							style="width:40%;height:40%;position:relative;left:14%;top:-50%;z-index:1;">
+							
+							
+						</div>
+						
+					</div>
+				
+				</div>
+			</div>
+			<div style="width:100%;height:230px;">
+				<div style="width:80%;height:100%;">
+				
+					<div class="product-title">채팅</div>
+					<div id="chatting_list" class="product-body" style="height:75%;">
+						<div class="chat-item"><div class="chat-head ellipse">정도혀</div><div class="chat-body">게</div><div class="chat-stamp">오전 2:32:32</div></div>
+					
+					</div>
+					<input id="UserMessage30755" maxlength="200" autocomplete="off" style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;">
+					<button class="waitroom" onclick="showanddissapear_sub();" >전송</button>
+				</div>
+				<div style="width:20%;height:100%;">
+					<button style="width:100%;height:100%;">준비</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="adright" style="width:20%;height:500px;float:left">
+	</div>
+</div>
+</div>
+
+<!-- Modal -->
+   <!-- 방만들기 설정값 -->
+  <div  class="modal fade" id="roomSetting" role="dialog">
+    <div class="modal-dialog">
+    
+      <!-- Modal content-->
+      <div style="width:400px;margin-left:40%; margin-top:8%; vertical-align:middle;" class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+          <h3 style="font-weight: bold;text-align:center;" class="modal-title">방 설정</h3>
+        </div>
+        <div class="modal-body">
+          
+				제목 <input id="roomname" type="text" value="">
+				
+				<br><br>
+				게임 인원 &nbsp;<select name="job">
+				<option value=""> 선택</option>
+				<option value=""> 1</option>
+				<option value=""> 2</option>
+				<option value=""> 3</option>
+				</select>
+				
+				<br><br>
+				<input type="radio" name="group" checked="">개인전
+				<input type="radio" name="group">팀전
+				
+				<br><br>
+				
+				<input type="checkbox" name="chk_info" value="HTML">잠금설정 
+				<input type="text" value=""  placeholder="Enter password...">
+				
+				<br><br>
+        </div>
+        <div class="modal-footer">
+       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="makeroom_makeroom()">확인</button>
+          	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+
+</body>
+<script>
+function makeroom_roomsetting(){	
+	 $("#roomSetting").modal();
+}
+
+function gotowait(){
+	location.href="Sub_waitingroom.html";
+}
+
+function showanddissapear(){
+	$("#sysmsg").text("123");
+	$("#sysmsg").css("display","inline");
+	$("#sysmsg").fadeIn();
+	setTimeout(function(){$("#sysmsg").fadeOut()},1000);
+
+}
+
+function showanddissapear_sub(){
+	$("#sub_red1").text("123");
+	$("#sub_red1").css("display","inline");
+	$("#sub_red1").fadeIn();
+	setTimeout(function(){$("#sub_red1").fadeOut()},1000);
+
+}
+
+
+window.onload = function(){
+	
+	
+}
+
+
+
+</script>
+
+</html>

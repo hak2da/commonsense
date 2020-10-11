@@ -169,8 +169,15 @@
 	  //방제 바꿔주는 리스너메서드 
 	  firebase.database().ref("rooms/"+roomid+"/setting/gamehostid").on("value",function(snapshot){
 		  gamehost_isme = snapshot.val() == userid ? true : false;
+		  gamehost_isme ? setsettinggamehostnick() :"";
 		  gamehostid=snapshot.val();
 	  });
+	  
+	  function setsettinggamehostnick(){
+		  firebase.database().ref('rooms/'+roomid+'/setting/').update({
+				gamehostnick : user_nick
+		 });
+	  }
 	  
 	//방제 바꿔주는 리스너메서드 
 	 firebase.database().ref("rooms/"+roomid+"/setting").on("value",function(snapshot){
@@ -231,11 +238,11 @@
 	  
 	  
 	   //방장이 강퇴시 나가게 되는 메서드 리스너
-	  firebase.database().ref("rooms/"+roomid+"/users/"+userstatusRef.key+"/status").on("value",function(snapshot){
+	  firebase.database().ref("rooms/"+roomid+"/users/"+userstatusRef.key+"/status").on("value",async function(snapshot){
 		  if(snapshot.val()==="kick_out"){
 			  kickout="true";
 			  alert("강퇴당하셨습니다.");
-			  localStorage.removeItem('roomid');
+			  await localStorage.removeItem('roomid');
 			  location.href="comsense-gameroomlist.html";
 		  }
 	  });
@@ -462,7 +469,7 @@
   }
   
   async function getmyroomuserdata(){
-		var value;  
+		var value;
 
 		await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).once('value').then(function(snapshot){
 			value = snapshot.val();
@@ -471,13 +478,11 @@
 	}
   
   async function gethostid(){
-	    
 	  	var value;
 	 	await firebase.database().ref('/rooms/' + roomid+'/setting/gamehostid').once('value').then(function(snapshot){
 			value =snapshot.val();
 		});
 	 	return value;
-		  
   }
   
   async function getuserlist(){
@@ -659,6 +664,11 @@
 			case "game_end":
 				if(gamehost_isme) deletechat();
 				pushtochat("게임이 끝났습니다.");
+				
+				setTimeout(function(){
+					gamestatusupdate("waiting_status");//대기상태로 돌림
+				},2000);
+				
 				break;
 				
 			default:
