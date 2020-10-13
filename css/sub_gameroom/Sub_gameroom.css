@@ -338,8 +338,21 @@ input {
 	display:none;
 }
 
+.visibie-hidden{
+	visibility: hidden;
+}
 
+.modal-mr{
+	margin-right:5%;
+}
 
+.modal-ml{
+	margin-left:5%;
+}
+
+.ready-button{
+	width: 100%; height: 100%;font-size:30px;color:black;font-weight:600;
+}
 
 
 
