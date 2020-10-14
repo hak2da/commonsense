@@ -65,7 +65,7 @@
 			<div id="adleft" class="adleft"></div>
 			<div style="width: 60%; float: left">
 				<div style="height:10%;">
-					<button id="room_settingtool" onclick="alert(1)" class="settingtool"
+					<button id="room_settingtool" onclick="makeroom_roomsetting()" class="settingtool"
 						style="margin-left: 1.2%; visibility:hidden; background-image: url( 'img/sub_gameroom/setting.svg' );">
 
 					</button>
@@ -168,56 +168,60 @@
       
     </div>
   </div>
-  
-   <!-- Modal -->
+  <!-- Modal -->
    <!-- 방만들기 설정값 -->
   <div  class="modal fade" id="roomSetting" role="dialog">
     <div class="modal-dialog">
     
       <!-- Modal content-->
-      <div style="width:400px;" class="modal-content">
+      <div style="width:400px;margin-left:40%; margin-top:8%; vertical-align:middle;" class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal">&times;</button>
           <h3 style="font-weight: bold;text-align:center;" class="modal-title">방 설정</h3>
         </div>
         <div class="modal-body">
           
-				제목 <input id="roomname" type="text" value="">
+				제목 <input id="modal_roomname" type="text" value="" maxlength="10">
+				
+				<br><br>				
+				게임 인원 &nbsp;
+				<select name="member" id="modal_limitofmember">
+					<option value="4"> 4</option>
+					<option value="5"> 5</option>
+					<option value="6"> 6</option>
+					<option value="7"> 7</option>
+					<option value="8"> 8</option>
+				</select>					
 				
 				<br><br>
-				게임 인원 &nbsp;<select name="limitofmember" id="limitofmember">
-				<option value="4"> 4</option>
-				<option value="5"> 5</option>
-				<option value="6"> 6</option>
-				<option value="7"> 7</option>
-				<option value="8"> 8</option>
-				</select>
-				
-				게임 라운드 &nbsp;<select name="round" id="game_round">
-				<option value="3" selected> 3</option>
-				<option value="5"> 5</option>
-				<option value="7"> 7</option>
-				</select>
-				
-				시간 제한 &nbsp;<select name="time_limit" id="time_limit">
-				<option value="7" selected> 7</option>	
-				<option value="10"> 10</option>
-				<option value="13"> 13</option>
+				게임 라운드 &nbsp;
+				<select name="round" id="modal_gameround">
+					<option value="3"> 3</option>
+					<option value="5"> 5</option>
+					<option value="7"> 7</option>
 				</select>
 				
 				<br><br>
+				제한 시간 &nbsp;
+				<select name="time" id="modal_limitoftime">
+					<option value="5"> 5</option>
+					<option value="7"> 7</option>
+					<option value="9"> 9</option>
+				</select>
+				
+<!-- 				<br><br> -->
 <!-- 				<input type="radio" name="group" checked="">개인전 -->
 <!-- 				<input type="radio" name="group">팀전 -->
 				
-<!-- 				<br><br> -->
+				<br><br>
 				
-				<input type="checkbox" name="chk_info" value="HTML">잠금설정 
-				<input type="text" value=""  placeholder="Enter password...">
+				<input type="checkbox" name="chk_info" value="HTML" id="makeroom_lockvalue">잠금설정
+				<input type="text" value=""  placeholder="Enter password..." id="makeroom_lockpassword">
 				
 				<br><br>
         </div>
         <div class="modal-footer">
-       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="room_setting()">확인</button>
+       		<button type="button" class="btn btn-default"  onclick="gameroomsetting()">확인</button>
           	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
         </div>
       </div>
@@ -228,10 +232,7 @@
 
 </body>
 <script>
-'use strict';
-	function makeroom_roomsetting(){
-		 $("#roomSetting").modal();
-	}
+	'use strict';
 	
 	function gotowait(){
 		location.href="Sub_waitingroom.html";
@@ -250,7 +251,6 @@
 		$("#sub_red1").fadeIn();
 		setTimeout(function(){$("#sub_red1").fadeOut()},1000);
 	}
-	
 
 </script>
 
@@ -271,7 +271,8 @@ var userreadycount;
 var userStatusDatabaseRef;
 var user_readybool = false;
 
-var userstatusRef;//게임룸에 데이터넣을때 user key값
+var userstatusRef;
+var userstatusRef_key;//게임룸에 데이터넣을때 user key값
 
 var answer_arr;//게임에서 정답배열을 저장할 객체
 
@@ -306,6 +307,7 @@ window.onload = function(){
 	  
 		userstatusRef = firebase.database().ref('/rooms/' + roomid+'/users').push({});
 		localStorage.setItem("userstatusRef_key",	userstatusRef.key);
+		userstatusRef_key = userstatusRef.key;
 		
 		userStatusDatabaseRef = firebase.database().ref('/rooms/' + roomid+'/users/'+userstatusRef.key);
 		
@@ -342,7 +344,6 @@ window.onload = function(){
 //connect status related javascript end
 </script>
 
-
 <script>
 //common javascript start
 	async function gethostid(){
@@ -351,6 +352,10 @@ window.onload = function(){
 			value =snapshot.val();
 		});
 	 	return value;
+	}
+	
+	function replaceAll(str, searchStr, replaceStr) {
+		   return str.split(searchStr).join(replaceStr);
 	}
 //common javascript end
 </script>
@@ -374,16 +379,16 @@ window.onload = function(){
 	
 	async function delegate_gamehost(userid){
 		  
-		  //방장권한이고 alert창에서 확인을 눌렀을때
-		  if(!gamehost_isme || confirm("방장을 위임하시겠습니까?")==false) return;
-		  
-		 	 await firebase.database().ref('rooms/'+roomid+'/setting').update({
-					gamehostid : userid
-			 });
-		 	 
-		 	await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
-				status : "member"
-		  	});
+		//방장권한이고 alert창에서 확인을 눌렀을때
+		if(!gamehost_isme || confirm("방장을 위임하시겠습니까?")==false) return;
+		 
+		await firebase.database().ref('rooms/'+roomid+'/setting').update({
+			gamehostid : userid
+		});
+			 
+		await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef_key).update({
+			status : "member"
+		});
 		  
 	}
 	async function kickout_member(user_id,user_nick,user_key){
@@ -397,11 +402,11 @@ window.onload = function(){
   	}
  	
 	async function get_kickout_val(){
-	 var kickout;
-	 firebase.database().ref("rooms/"+roomid+"/users/"+userstatusRef.key+"/status").on("value",function(snapshot){
-	  kickout = snapshot.val()=="kick_out" ? true : false;
-	 });  
-	 return kickout
+		var kickout;
+		firebase.database().ref("rooms/"+roomid+"/users/"+userstatusRef.key+"/status").on("value",function(snapshot){
+		 	kickout = snapshot.val()=="kick_out" ? true : false;
+		});  
+		return kickout
 	}
  	  
  	
@@ -453,10 +458,6 @@ window.onload = function(){
 
 				}else{
 					var userdata=user.user_nick+' / '+ (user.ready ? '준비완료':'대기중');
-					if(gamehost_isme) {
-						userdata+= "<button onclick=\"delegate_gamehost('"+user.user_id+"')\">방장</button>";
-						userdata+= "<button onclick=\"kickout_member('"+user.user_id+"','"+user.user_nick+"','"+key+"')\">강퇴</button>";
-					}
 					
 					$("#ingame_userlist").append(make_memberdiv(user.user_nick,user.ready,user.user_id,key));
 // 					pushtouserlist(userdata);	
@@ -506,7 +507,7 @@ window.onload = function(){
 	}
 	
 	async function getmyroomuserdata(){
-		var value;  
+		var value;
 	
 		await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).once('value').then(function(snapshot){
 			value = snapshot.val();
@@ -519,24 +520,33 @@ window.onload = function(){
 			value= snapshot.val();
 		});
 		return value;
-	}
-	  
+	} 
 
 	async function gamehost_manager(userlist,gamehost_exist){
 		  var roomhost;
 	
 		  //user 대기목록 나혼자일때
-		  console.log("gamehost_exist",gamehost_exist);
-		  console.log("Object.keys(userlist).length",Object.keys(userlist).length);
+// 		  console.log("gamehost_exist",gamehost_exist);
+// 		  console.log("Object.keys(userlist).length",Object.keys(userlist).length);
 		  
+// 		  console.log("gamehostmng");
 		  if(Object.keys(userlist).length==1 && !gamehost_exist){
-			  
-		  	var myroomuserdata;
-		  	await getmyroomuserdata().then(result=> myroomuserdata = result);
+// 			console.log("oneman and no gamehost");
+// 		  	var myroomuserdata;
+// 		  	await getmyroomuserdata().then(result=> myroomuserdata = result);
+		  	
+		  	var hostid_local;
+		  	await gethostid().then(result => hostid_local = result);
 			
-		  	console.log("myroomuserdata",myroomuserdata)
-		  	console.log("\n");
-			if(myroomuserdata!=null && myroomuserdata.status=='member'){
+// 		  	console.log("myroomuserdata",myroomuserdata)
+// 		  	console.log("\n");
+// 			if(myroomuserdata!=null && myroomuserdata.status=='member'){
+// 			console.log("userid",userid)
+// 			console.log("hostid_local",hostid_local);
+// 			if(hostid_local!=null && hostid_local!=userid){
+				
+			if(hostid_local!=userid){
+// 				console.log("if 1.5 sec later settime");
 				
 				setTimeout(async function(){
 					var local_userlist;
@@ -544,9 +554,13 @@ window.onload = function(){
 					await getuserlist().then(result => local_userlist = result); //settimeout의 시간이 지난뒤 userlist를 가져옴
 					
 					//1인혼자 남은 인원의 id랑 setting의 gamehost의 id가 같지 않다면 setting의 gamehostid를 1인의 id로 수정			
-					await getmyroomuserdata().then(result=> myroomuserdata = result);
+// 					await getmyroomuserdata().then(result=> myroomuserdata = result);
+					
+					await gethostid().then(result => hostid_local = result);
 				
-					if(local_userlist!=null && Object.keys(local_userlist).length==1 && myroomuserdata.status=='member'){
+// 					if(local_userlist!=null && Object.keys(local_userlist).length==1 && myroomuserdata.status=='member'){
+					if(local_userlist!=null && Object.keys(local_userlist).length==1 && hostid_local!=userid){
+					
 							
 						//host값을 신경써야되서 봐야함
 						await firebase.database().ref('rooms/'+roomid+'/setting').update({
@@ -565,6 +579,8 @@ window.onload = function(){
 			// member중에 host인 사람의 id가 있는데 
 			// host value가 아닐때 hostvalue로 바꿔줌
 		  }else if(Object.keys(userlist).length==1 && !gamehost_exist){
+			  console.log("oneman and no gamehost");	  
+		  
 			  var hostid;
 			  await gethostid().then(result => hostid = result);
 			  if(userid==hostid){
@@ -614,7 +630,7 @@ window.onload = function(){
 			},2000);
 			  
 		  }else{
-			  console.log("else",gamehost_exist);
+// 			  console.log("else",gamehost_exist);
 		  }		
 		  
 	}
@@ -633,23 +649,33 @@ window.onload = function(){
 			gamehost_isme ? setsettinggamehostnick() :"";
 			gamehost_isme ? setstartbtn_host() : setstartbtn_member();
 			showroomsetting_btn(gamehost_isme);
-			if(!gamehost_isme) await ifmymbr_statusishost();
+			if(!gamehost_isme) ifmymbr_statusishost();
 			gamehostid=snapshot.val();
 		});
 		
 
 		//방제 바꿔주는 리스너메서드 
 		 firebase.database().ref("rooms/"+roomid+"/setting").on("value",function(snapshot){
-			  $('#gameroom-title').text("방제 : " +snapshot.val().roomName);
-			  
-			  //모달창의 방제 이름
-// 			  $('#roomname').val(snapshot.val().roomName);
-			  
-			  //모달창의 라운드
-// 			  $('#game_round').val(snapshot.val().gameround);
-			  
-			  //모달창의 시간제한
-// 			  $('#time_limit').val(snapshot.val().time_limit);
+			 $('#gameroom-title').text("방제 : " +snapshot.val().roomName);
+			 
+			 //모달창의 방제 이름
+			 $('#modal_roomname').val(snapshot.val().roomName);
+			 
+			 //모달창의 회원수제한
+			 $('#modal_limitofmember').val(snapshot.val().limitofmember).prop("selected", true);
+			 
+			 //모달창의 게임라운드
+			 $('#modal_gameround').val(snapshot.val().gameround).prop("selected", true);
+			 
+			 //모달창의 시간제한
+			 $('#modal_limitoftime').val(snapshot.val().time_limit).prop("selected", true);
+			 
+			//모달창의 게임 잠금 유무
+			snapshot.val().lock ? $('#makeroom_lockvalue').prop("checked", true) : $('#makeroom_lockvalue').prop("checked", false);
+			
+			//모달창의 잠금 패스워드
+			snapshot.val().lock ? $('#makeroom_lockpassword').val(snapshot.val().lock_password) : $('#makeroom_lockpassword').val("");   
+// 			 $('#makeroom_lockpassword').val(snapshot.val().lock_password);
 		  });
 		
 		function setsettinggamehostnick(){
@@ -667,26 +693,24 @@ window.onload = function(){
 		}
 		
 		function showroomsetting_btn(hostvalue){
-			if(hostvalue){
-				$("#room_settingtool").css("visibility","visible");
-			}else{
-				$("#room_settingtool").css("visibility","hidden");
-			}
+			hostvalue ? $("#room_settingtool").css("visibility","visible") : $("#room_settingtool").css("visibility","hidden");
 		}
 	}
 	
 	async function ifmymbr_statusishost(){
 		
-		console.log("hi!");
+// 		console.log("hi!");
 		var status;
 		if(gamehost_isme) return;
-		await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).once('value').then(await function(snapshot){
-			console.log("snapshot.val()",snapshot.val()));
-// 			status = snapshot.val().status;
+// 		console.log("userstatusRef.key",userstatusRef.key);
+		await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef_key).once('value').then(function(snapshot){
+// 			console.log("snapshot.val()",snapshot.val());
+			if(snapshot.val()==null) return;
+			status = snapshot.val().status;
 		});
 		
 		if(status=="host"){
-			await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef.key).update({
+			await firebase.database().ref('rooms/'+roomid+'/users/'+userstatusRef_key).update({
 				status : "member"
 		  	});
 		}
@@ -784,7 +808,7 @@ window.onload = function(){
 	function gettime(){
 		let today = new Date();   
 	
-		let hours = today.getHours(); // 시
+		let hours = today.getHours();	   // 시
 		let minutes = today.getMinutes();  // 분
 		let seconds = today.getSeconds();  // 초
 		let ampm="";
@@ -828,6 +852,77 @@ window.onload = function(){
 	}
 
 //userstatus related javascript end
+</script>
+
+<script>
+//game pregress related javascript start
+//ingame user handler
+var game_pregress_winonload = window.onload;	
+window.onload = function(){
+	game_pregress_winonload();//window onload를 여러번 사용하기 위함
+					
+	}
+	
+	function gamestart2(){
+		if(!gamehost_isme){
+			alert("방장이 아닙니다.");
+			return;
+		}
+		
+		if(Object.keys(userlist).length-1 == userreadycount){
+		//  alert("게임을 시작합니다.");
+		}else{
+			 alert("준비되지 않은 플레이어가 있습니다.");
+			 return;
+		}
+		
+		gamestatusupdate("gamestart");
+	}
+//userlist related javascript end
+</script>
+
+<script>
+//modal related javascript start
+var modal_winonload = window.onload;	
+window.onload = function(){
+	modal_winonload();//window onload를 여러번 사용하기 위함
+					
+	}
+	
+	function makeroom_roomsetting(){
+		$("#roomSetting").modal();
+	}
+	
+	function gameroomsetting(){
+		var roomName = $("#modal_roomname").val();
+		
+		if(roomName==null||roomName==""){
+			alert("방이름을 입력하셔야합니다.");
+			$("#modal_roomname").focus();
+			return;
+		}
+		
+		var is_lock = $("#makeroom_lockvalue").is(":checked");
+		var lockpassword = $("#makeroom_lockpassword").val();
+		if(is_lock && (lockpassword==null || lockpassword=="")){
+			alert("비밀번호를 입력해주세요.");
+			$("#makeroom_lockpassword").focus();
+			return;
+		}
+		 
+		//save in database
+		firebase.database().ref('rooms/'+roomid+'/setting').update({
+			"roomName" : $("#modal_roomname").val(),
+			"limitofmember" : $("#modal_limitofmember").val(),
+			"gameround" : $("#modal_gameround").val(),
+			"time_limit" : $("#modal_limitoftime").val(),
+			"lock":$("#makeroom_lockvalue").is(":checked"),
+			"lock_password":$("#makeroom_lockpassword").val()
+	 	});
+		$("#roomSetting").modal("hide");
+	
+	}
+//userlist related javascript end
 </script>
 
 </html>

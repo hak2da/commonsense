@@ -118,29 +118,47 @@
         </div>
         <div class="modal-body">
           
-				제목 <input id="roomname" type="text" value="">
+				제목 <input id="modal_roomname" type="text" value="" maxlength="10">
+				
+				<br><br>				
+				게임 인원 &nbsp;
+				<select name="member" id="modal_limitofmember">
+					<option value="4"> 4</option>
+					<option value="5"> 5</option>
+					<option value="6"> 6</option>
+					<option value="7"> 7</option>
+					<option value="8"> 8</option>
+				</select>					
 				
 				<br><br>
-				게임 인원 &nbsp;<select name="job">
-				<option value=""> 선택</option>
-				<option value=""> 1</option>
-				<option value=""> 2</option>
-				<option value=""> 3</option>
+				게임 라운드 &nbsp;
+				<select name="round" id="modal_gameround">
+					<option value="3"> 3</option>
+					<option value="5"> 5</option>
+					<option value="7"> 7</option>
 				</select>
 				
 				<br><br>
-				<input type="radio" name="group" checked="">개인전
-				<input type="radio" name="group">팀전
+				제한 시간 &nbsp;
+				<select name="time" id="modal_limitoftime">
+					<option value="5"> 5</option>
+					<option value="7"> 7</option>
+					<option value="9"> 9</option>
+				</select>
+				
+<!-- 				<br><br> -->
+<!-- 				<input type="radio" name="group" checked="">개인전 -->
+<!-- 				<input type="radio" name="group">팀전 -->
 				
 				<br><br>
 				
-				<input type="checkbox" name="chk_info" value="HTML">잠금설정 
-				<input type="text" value=""  placeholder="Enter password...">
+				<input type="checkbox" name="chk_info" value="HTML" id="makeroom_lockvalue">잠금설정
+				<input type="text" value=""  placeholder="Enter password..." id="makeroom_lockpassword">
 				
 				<br><br>
         </div>
         <div class="modal-footer">
-       		<button type="button" class="btn btn-default" data-dismiss="modal" onclick="makeroom_makeroom()">확인</button>
+       		<button type="button" class="btn btn-default"  onclick="makeroom_makeroom()">확인</button>
           	<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
         </div>
       </div>
@@ -159,12 +177,13 @@ function randomString(ranlength) {
 	var string_length = ranlength;
 	var randomstring = '';
 	for (var i=0; i<string_length; i++) {
-	var rnum = Math.floor(Math.random() * chars.length);
-	randomstring += chars.substring(rnum,rnum+1);
+		var rnum = Math.floor(Math.random() * chars.length);
+		randomstring += chars.substring(rnum,rnum+1);
 	}
 	//document.randform.randomfield.value = randomstring;
 	return randomstring;
 }
+
 </script>
 
 
@@ -300,6 +319,64 @@ function randomString(ranlength) {
 		}
 		
 	}
+</script>
+
+<script>
+//makeroom related javascript start
+
+	var makeroom_winonload = window.onload;	
+	window.onload = function(){
+		makeroom_winonload(); //window onload를 여러번 사용하기 위함
+						
+	}
+	
+	function makeroom_makeroom(){
+	 
+		var roomName = $("#modal_roomname").val();
+		
+		if(roomName==null||roomName==""){
+			alert("방이름을 입력하셔야합니다.");
+			$("#modal_roomname").focus();
+			return;
+		}
+		
+		var is_lock = $("#makeroom_lockvalue").is(":checked");
+		var lockpassword = $("#makeroom_lockpassword").val();
+		if(is_lock && (lockpassword==null || lockpassword=="")){
+			alert("비밀번호를 입력해주세요.");
+			$("#makeroom_lockpassword").focus();
+			return;
+		}
+		 
+		//save in database
+		var roomref = firebase.database().ref('rooms').push({});
+		
+		firebase.database().ref('rooms/'+roomref.key+'/setting').update({
+			"roomName" : $("#modal_roomname").val(),
+			"limitofmember" : $("#modal_limitofmember").val(),			
+			"gameround" : $("#modal_gameround").val(),
+			"time_limit" : $("#modal_limitoftime").val(),
+			"lock":$("#makeroom_lockvalue").is(":checked"),
+			"lock_password":$("#makeroom_lockpassword").val()
+		 	});
+		
+		firebase.database().ref('rooms/'+roomref.key+'/ongame').update({
+			gamestatus:"waiting_status"
+		});
+		
+		$("#roomSetting").modal("hide");
+		localStorage.setItem('roomid', roomref.key);
+		localStorage.setItem('connect_status', null);
+		location.href="Sub_gameroom.html";
+	}
+	
+	function modalclose(){
+// 		$("#roomSetting").modal("hide");
+		$("#roomName").modal("hide");
+
+	}
+	
+//makeroom related javascript end
 </script>
 
 </html>

@@ -178,6 +178,8 @@ async function enter_game(roomid){
 	let usersnum_local;
 	let gamestatus_local;
 	
+	localStorage.setItem("connect_status","unload");
+	
 	await firebase.database().ref('rooms/'+roomid+'/setting/limitofmember').once('value').then(function(snapshot){
 		limitofmember_local = snapshot.val();
 	});
@@ -281,6 +283,9 @@ async function enter_game(roomid){
 		  
 		  for(key in roomlist){
 			  let roomref =roomlist[key];
+			  
+			  
+			  
 			  let divcont ="";
 			  
 			  divcont+=("<div class=\'rooms-item rooms-gaming rooms-locked\'>");
