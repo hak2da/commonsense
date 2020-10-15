@@ -85,9 +85,9 @@
 							<div
 								style="height: 65%; width: 100%; background-color: yellow; position: relative;">
 
-								<div class="content-genre">장르 : 문화/예술</div>
+								<div class="content-genre" id="content-genre">장르 : 문화/예술</div>
 
-								<div class="content-quiz">문제 : 종이, 인쇄물, 모래, 천 등등 여러가지를 붙여서
+								<div class="content-quiz" id="content-quiz">문제 : 종이, 인쇄물, 모래, 천 등등 여러가지를 붙여서
 									작품을 완성시키는 회화 기법 "풀로 붙이는 것"이라는 뜻의 미술용어이름은?</div>
 
 								<div class="limit-timebox">
@@ -275,6 +275,7 @@ var userstatusRef;
 var userstatusRef_key;//게임룸에 데이터넣을때 user key값
 
 var answer_arr;//게임에서 정답배열을 저장할 객체
+var quizgenre_arr= new Array();
 
 window.onload = function(){
 	//window onload start
@@ -397,7 +398,7 @@ window.onload = function(){
 	  if(!gamehost_isme || confirm("'"+user_nick+"' 멤버를 추방시키겠습니까?")==false) return;
 	  
 	 	 await firebase.database().ref('rooms/'+roomid+'/users/'+user_key).update({
-				status : "kick_out"
+			status : "kick_out"
 		 }); 		  
   	}
  	
@@ -405,11 +406,9 @@ window.onload = function(){
 		var kickout;
 		firebase.database().ref("rooms/"+roomid+"/users/"+userstatusRef.key+"/status").on("value",function(snapshot){
 		 	kickout = snapshot.val()=="kick_out" ? true : false;
-		});  
+		});
 		return kickout
 	}
- 	  
- 	
    
 	function manage_member(nick,id,key){
 		if(!gamehost_isme)return;
@@ -685,7 +684,7 @@ window.onload = function(){
 		}
 		
 		function setstartbtn_host(){
-			$("#usrready_button_div").html("<button id=\"hoststart_button\" onclick=\"gamestart2()\" class=\"ready-button\">게임시작</button>");
+			$("#usrready_button_div").html("<button id=\"hoststart_button\" onclick=\"gamestart()\" class=\"ready-button\">게임시작</button>");
 		}
 		
 		function setstartbtn_member(){
@@ -803,6 +802,15 @@ window.onload = function(){
 		
 		firebase.database().ref("rooms/"+roomid+"/chatting").set({
 		});
+		
+		if(ongame_status=="answer_trying"){//만약 게임이 시작되서 answer_trying의 경우
+			userchatting=replaceAll(userchatting," ","");
+			firebase.database().ref("rooms/"+roomid+"/ongame_answertrying").set({
+				"user_answer" : userchatting,
+				"user_nick" : user_nick,
+				"user_id" : userid
+			});	
+		}
 	}
 	
 	function gettime(){
@@ -854,32 +862,6 @@ window.onload = function(){
 //userstatus related javascript end
 </script>
 
-<script>
-//game pregress related javascript start
-//ingame user handler
-var game_pregress_winonload = window.onload;	
-window.onload = function(){
-	game_pregress_winonload();//window onload를 여러번 사용하기 위함
-					
-	}
-	
-	function gamestart2(){
-		if(!gamehost_isme){
-			alert("방장이 아닙니다.");
-			return;
-		}
-		
-		if(Object.keys(userlist).length-1 == userreadycount){
-		//  alert("게임을 시작합니다.");
-		}else{
-			 alert("준비되지 않은 플레이어가 있습니다.");
-			 return;
-		}
-		
-		gamestatusupdate("gamestart");
-	}
-//userlist related javascript end
-</script>
 
 <script>
 //modal related javascript start
@@ -923,6 +905,310 @@ window.onload = function(){
 	
 	}
 //userlist related javascript end
+</script>
+
+<script>
+//game progress related javascript start
+	function gamestart(){
+		if(!gamehost_isme){
+			alert("방장이 아닙니다.");
+			return;
+		}
+		
+		if(Object.keys(userlist).length-1 == userreadycount){
+			gamestatusupdate("gamestart");
+		}else{
+			 alert("준비되지 않은 플레이어가 있습니다.");
+			 return;
+		}
+	}
+	
+	var game_progress_winonload = window.onload;	
+	window.onload = function(){
+		game_progress_winonload();//window onload를 여러번 사용하기 위함
+		
+		//퀴즈장르를 가져와서 arr에 저장
+		firebase.database().ref("quizgenre").on("child_added",function(snapshot){
+		 	quizgenre_arr.push(snapshot.key);
+		});
+		
+		firebase.database().ref('/rooms/'+roomid+'/ongame').on("value",async function(snapshot){
+				
+			ongame_status=snapshot.val().gamestatus;
+				
+	  		switch (snapshot.val().gamestatus) {
+				case "gamestart":
+					erasetochat();
+					pushtochat("게임이 시작되었습니다.");
+					
+					//방장만 퀴즈 바꿀수 있게 함
+					if(gamehost_isme){
+						setTimeout(async function(){
+							await progressround_setzero();
+							gamestatusupdate("newquiz");
+						},2000);//2초뒤에 새퀴즈시작
+					}
+					break;
+					
+				case "newquiz":
+					pushtochat("문제를 맞춰주세요.");
+					if(gamehost_isme){
+						pushtoquiz_toserver();//문제를 랜덤으로 뽑아서 해당 room의 ongame_quiz에 넣음
+					}
+					break;
+				
+				case "answer_trying":
+					if(gamehost_isme){
+						var timelimit;
+						await get_timelimit().then(result=>timelimit =result);
+						
+						anstry_Interval = setInterval(async function() {
+	
+							if( 1 < timelimit && --timelimit <= 5){
+								system_msg(timelimit+"초 남았습니다")
+		
+							}else if(timelimit<=1){
+								clearTimeout(anstry_Interval);
+								system_msg("아무도 맞추지 못했습니다.");
+								erasetochat();
+								await whatisanswer();
+								
+								setTimeout(function(){
+									gamestatusupdate("one_round_end");
+								},2000);
+							}
+	                    },1000);                      
+					}
+					break;
+					
+				case "rightanswer":
+					
+					erasetochat();
+					clearTimeout(anstry_Interval);//정답을 맞췃을경우 interval취소
+					
+					firebase.database().ref('/rooms/'+roomid+'/ongame_answertrying').once("value",function(snapshot){
+						pushtochat("\n"+snapshot.val().user_nick+"님 정답입니다.");
+					});
+					
+					await whatisanswer();
+					
+					//여기서 게임라운드 진행value랑 게임라운드 value랑 비교하는 메서드
+					
+					if(gamehost_isme){
+						setTimeout(function(){
+							gamestatusupdate("one_round_end");
+						},2000);
+					}
+					answer_arr=null;
+					break;
+				case "one_round_end":
+					
+					//progressround를 한라운드올리는 메서드 
+					await gameprogress_stepup();
+					
+					var gameremaing_count;
+					await gameremaing_progressnum().then(result => gameremaing_count=result);
+					
+					if(gameremaing_count>0){
+						gamestatusupdate("newquiz");
+					}else if(gameremaing_count<=0){
+						gamestatusupdate("game_end");
+					}else{
+						console.log("roundelse default")
+					}
+					
+					break;
+				case "game_end":
+					if(gamehost_isme) deletechat();
+					pushtochat("게임이 끝났습니다.");
+					
+					setTimeout(function(){
+						gamestatusupdate("waiting_status");//대기상태로 돌림
+					},2000);
+					
+					break;
+					
+				default:
+					console.log("125");
+					break;
+				}
+				 
+		});
+		
+		
+		firebase.database().ref('/rooms/'+roomid+'/ongame_answertrying').on("value",function(snapshot){
+			
+			if(gamehost_isme && ongame_status=="answer_trying" && answer_arr!=null){
+			
+				for(var key in answer_arr){
+			
+					if(snapshot.val().user_answer==answer_arr[key]){
+						
+						gamestatusupdate("rightanswer")
+						return;
+					}
+				}
+				system_msg("틀렸습니다.")
+			}
+		});
+		
+		firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').on("value",function(snapshot){
+			console.log("ongame_quiz",snapshot.val());
+			if(snapshot.val()!=null){
+				$('#content-genre').text("장르 : "+snapshot.val().quizgenre);
+				$('#content-quiz').text("문제 내용 : "+snapshot.val().quiz);
+			}
+			if(gamehost_isme && ongame_status=="answer_trying"){
+				answer_arr = snapshot.val().quizanswer_array;
+			}
+		});
+	}
+	
+  	function gamestatusupdate(update_value){
+  		if(gamehost_isme){
+  			firebase.database().ref('/rooms/'+roomid+'/ongame').update({
+				gamestatus : update_value
+			});
+  		}
+  	}
+  	
+  	function erasetochat(){
+//   		document.getElementById("chatcontent").innerHTML="";
+  	}
+  	
+  	function pushtochat(txt){
+//   		document.getElementById("chatcontent").innerHTML+='<span>'+txt+'</span><br>';
+//   		$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
+  		var system_chatfont="system-chatfont";
+  		$("#chat-item").append("<div class=\"chat-head ellipse "+system_chatfont+"\">[[  system  ]]</div>");
+		$("#chat-item").append("<div class=\"chat-body "+system_chatfont+"\">"+txt+"</div>");
+// 		$("#chat-item").append("<div class=\"chat-stamp "+mycolor+"\">"+gettime()+"</div>");
+		$("#chat-item").append("<div class=\"chat-stamp mycolor\">"+gettime()+"</div>");
+		
+		$("#chat-item-box").scrollTop($("#chat-item-box")[0].scrollHeight);
+  	}
+  	
+    async function progressround_setzero(){
+  	  await firebase.database().ref('rooms/'+roomid+'/setting').update({
+  			gameround_progress : 0
+  	  	});
+    }
+    
+  	async function get_timelimit(){//게임진행도 한단계업 메서드
+		
+		var time;
+		
+		await firebase.database().ref('rooms/'+roomid+'/setting/time_limit').once('value').then(function(snapshot){
+			time = snapshot.val() != null ? snapshot.val() : 0;
+		});
+		
+		return time;
+		
+	}
+  	
+	function system_msg(msg,color){
+		if(!gamehost_isme) return;
+		if(color==null) color='black';
+		firebase.database().ref('/rooms/'+roomid+'/system').update({
+			system_msg : msg,
+			system_msgcolor : color
+		});
+		
+		firebase.database().ref('/rooms/'+roomid+'/system').update({
+			
+		});
+	}
+	
+  	async function whatisanswer(){
+  		await firebase.database().ref('/rooms/'+roomid+'/ongame_quiz/quizanswer_orig').once("value",function(snapshot){
+			system_msg("\n정답은 「"+snapshot.val()+"」 입니다.");
+		});
+  	}
+  	
+ 	async function gameprogress_stepup(){//게임진행도 한단계업 메서드
+		
+		var gameroundprogress_value;
+		
+		await firebase.database().ref('rooms/'+roomid+'/setting/gameround_progress').once('value').then(function(snapshot){
+			gameroundprogress_value = snapshot.val() != null ? snapshot.val() : 0;
+		});
+		
+		++gameroundprogress_value;
+		
+		await firebase.database().ref('rooms/'+roomid+'/setting').update({
+			gameround_progress : gameroundprogress_value
+	  	});
+	}
+    
+ 	
+	async function gameremaing_progressnum(){
+		var gameround_value;
+		var gameroundprogress_value;
+
+		await firebase.database().ref('rooms/'+roomid+'/setting/gameround').once('value').then(function(snapshot){
+			gameround_value = snapshot.val()!=null ? snapshot.val() : 0;
+		});
+		
+		await firebase.database().ref('rooms/'+roomid+'/setting/gameround_progress').once('value').then(function(snapshot){
+			gameroundprogress_value = snapshot.val() != null ? snapshot.val() : 0;
+		});
+		
+		return gameround_value-gameroundprogress_value;
+	}
+	
+	async function pushtoquiz_toserver(){
+		if(!gamehost_isme) return;
+		var genreindex = parseInt(Math.random()*(quizgenre_arr.length));//퀴즈장르의 배열의 숫자중 랜덤으로 하나의 숫자를 가져옴
+	 	
+	 	//하나의 숫자로 장르의 이름을 가져와서 데이터베이스에 삽입
+	 	await firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').update({
+			quizgenre : quizgenre_arr[genreindex]
+	  	});
+		
+		var quiznans = new Array();
+		await firebase.database().ref("quizgenre/"+quizgenre_arr[genreindex]).on("child_added",function(snapshot){
+			quiznans.push(snapshot.val());
+		});
+		
+		var quizindex = parseInt(Math.random()*(quiznans.length));
+		quiznansitem = quiznans[quizindex];
+		
+		await gamestatusupdate("answer_trying");
+		
+		await firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').update({
+			quiz : quiznansitem.quiz,
+			quizanswer_array : quiznansitem.answer_array,
+			quizanswer_orig : quiznansitem.answer_orig
+	  	});
+		
+	}
+	
+	function deletechat(){
+//   		if(gamehost_isme)
+//   			firebase.database().ref("rooms/"+roomid+"/chatting").remove();
+  	}
+  	
+//game progress related javascript end
+</script>
+
+<script>
+	//system related javascript start
+	var system_winonload = window.onload;	
+	window.onload = function(){
+		system_winonload();//window onload를 여러번 사용하기 위함
+		//시스템 메시지 리스너 
+		firebase.database().ref("rooms/"+roomid+"/system").on("value",function(snapshot){
+			pushtosystem(snapshot.val().system_msg,snapshot.val().system_msgcolor);
+		});
+		
+		function pushtosystem(txt,color){
+			if(color==null) color="black";
+			pushtochat(txt)
+// 			document.getElementById("chatcontent").innerHTML+='<span style=\"color:'+color+'\">'+txt+'</span><br>';
+// 			$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
+		}
+	}	 
+	//system related javascript end
 </script>
 
 </html>

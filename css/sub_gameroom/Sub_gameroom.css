@@ -178,6 +178,12 @@ input {
 	color:black;
 }
 
+.system-chatfont{
+	color:black;
+	font-weight:bold;
+	text-align:center;
+}
+
 .chat-head {
 	float: left;
 	padding-right: 4px;

@@ -194,7 +194,7 @@
 	  });
 	  
 	//시스템 메시지 리스너 
-	 firebase.database().ref("rooms/"+roomid+"/system").on("value",function(snapshot){
+	  firebase.database().ref("rooms/"+roomid+"/system").on("value",function(snapshot){
 		  pushtosystem(snapshot.val().system_msg,snapshot.val().system_msgcolor);
 	  });
 
