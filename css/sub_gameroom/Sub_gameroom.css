@@ -9,6 +9,7 @@
 	border-bottom: 1px outset #d2d2d2;
 	border-right: 1px outset #d2d2d2;
 }
+
 .rooms-item {
 	padding: 5px;
 	border-radius: 10px;
@@ -93,6 +94,7 @@
 	width: 10%;
 	height: 20%;
 	text-align: center;
+	visibility: hidden;
 }
 
 .limit-time-leftbox {
@@ -114,16 +116,60 @@
 
 .sysmsg {
 	width: 100%;
-	position: relative;
-	background-color: aqua;
-	height: 30%;
-	top: -120px;
-	display: none;
-	z-index: 1;
+	position: absolute;
+	/* 	background-color: aqua; */
+	height: 55%;
+	top: 30px;
+	/* 	display: none; */
+		visibility:hidden;
+/* 	visibility: visible; */
+	z-index: 2;
+	/* 	margin-left:10%; */
 	text-align: center;
 	font-size: 16px;
 	text-weight: 600;
 	vertical-align: middle;
+}
+
+.sysmsg-border {
+	height: 100%;
+	width: 80%;
+	position: absolute;
+	left: 10%;
+	background-color: lime;
+	border-radius: 28px;
+	z-index: 3;
+}
+
+.sysmsg-fontbox {
+	position: absolute;
+	height: 88%;
+	width: 98%;
+	left: 1%;
+	top: 6%;
+	background-color: white;
+	border-radius: 20px;
+	z-index: 4;
+	
+}
+
+.sysmsg-alertcontent {
+	position: absolute;
+	top: 40%;
+	left: 50%;
+	transform: translate(-50%, -100%);
+	color: black;
+	font-size: 20px;
+	font-weight:600;
+}
+
+.sysmsg-whtisans {
+	position: absolute;
+	top: 60%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	color: black;
+	font-weight:600;
 }
 
 input {
@@ -174,14 +220,14 @@ input {
 	overflow: hidden;
 }
 
-.mycolor{
-	color:black;
+.mycolor {
+	color: black;
 }
 
-.system-chatfont{
-	color:black;
-	font-weight:bold;
-	text-align:center;
+.system-chatfont {
+	color: black;
+	font-weight: bold;
+	text-align: center;
 }
 
 .chat-head {
@@ -236,12 +282,12 @@ input {
 	border-radius: 10px;
 	opacity: .8;
 	left: 5%;
-	top:-73%;
-	position:absolute;
-/* 	position: relative; */
+	top: -73%;
+	position: absolute;
+	/* 	position: relative; */
 	word-break: break-all;
 	padding: 5px;
-	color:black;
+	color: black;
 }
 
 .sub:before {
@@ -316,63 +362,78 @@ input {
 	height: 20px;
 }
 
-.user-box{
-	float:left;width:12%;height:100%;position:relative;
+.user-box {
+	float: left;
+	width: 12%;
+	height: 100%;
+	position: relative;
 }
 
-.user-box-clickable{
-	float:left;width:12%;height:100%;cursor:pointer;position:relative;
+.user-box-clickable {
+	float: left;
+	width: 12%;
+	height: 100%;
+	cursor: pointer;
+	position: relative;
 }
 
-.user-img{
-	width:80%;height:80%;position:absolute;left:10%;top:10%;z-index:0;
+.user-img {
+	width: 80%;
+	height: 80%;
+	position: absolute;
+	left: 10%;
+	top: 10%;
+	z-index: 0;
 }
 
-.user-ready{
-	width:55%;height:40%;left:28%;top:44%;z-index:1;position:absolute;
+.user-ready {
+	width: 55%;
+	height: 40%;
+	left: 28%;
+	top: 44%;
+	z-index: 1;
+	position: absolute;
 }
 
-.user-crown{
-	width:47%;height:42%;position:absolute;left:14%;top:44%;z-index:1;
+.user-crown {
+	width: 47%;
+	height: 42%;
+	position: absolute;
+	left: 14%;
+	top: 44%;
+	z-index: 1;
 }
 
-.user-nick{
-	width:100%;position:absolute;top:84%;left:2%;color:black;font-size:15px;text-align:center;
+.user-nick {
+	width: 100%;
+	position: absolute;
+	top: 84%;
+	left: 2%;
+	color: black;
+	font-size: 15px;
+	text-align: center;
 }
 
-.display-none{
-	display:none;
+.display-none {
+	display: none;
 }
 
-.visibie-hidden{
+.visibie-hidden {
 	visibility: hidden;
 }
 
-.modal-mr{
-	margin-right:5%;
+.modal-mr {
+	margin-right: 5%;
 }
 
-.modal-ml{
-	margin-left:5%;
+.modal-ml {
+	margin-left: 5%;
 }
 
-.ready-button{
-	width: 100%; height: 100%;font-size:30px;color:black;font-weight:600;
+.ready-button {
+	width: 100%;
+	height: 100%;
+	font-size: 30px;
+	color: black;
+	font-weight: 600;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

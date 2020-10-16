@@ -90,15 +90,22 @@
 								<div class="content-quiz" id="content-quiz">문제 : 종이, 인쇄물, 모래, 천 등등 여러가지를 붙여서
 									작품을 완성시키는 회화 기법 "풀로 붙이는 것"이라는 뜻의 미술용어이름은?</div>
 
-								<div class="limit-timebox">
+								<div id="limit-timebox" class="limit-timebox">
 									<div class="limit-time-leftbox">
 										<img style="width: 100%; height: 100%;"
 											src="img/sub_gameroom/time_limit.png">
 									</div>
-									<div class="limit-time-rightbox">5초</div>
+									<div id="limit-time-rightbox" class="limit-time-rightbox"></div>
 								</div>
 
-								<div id="sysmsg" class="sysmsg"></div>
+								<div id="sysmsg" class="sysmsg">
+									<div class="sysmsg-border">
+										<div class="sysmsg-fontbox">
+											<font id="sysmsg-alertcontent" class="sysmsg-alertcontent"></font>
+										    <font id="sysmsg-whtisans" class="sysmsg-whtisans"></font>
+										</div>
+									</div>
+								</div>
 
 							</div>
 							<div style="height: 35%; width: 100%; background-color: none;">
@@ -239,10 +246,12 @@
 	}
 	
 	function showanddissapear(){
-		$("#sysmsg").text("123");
-		$("#sysmsg").css("display","inline");
-		$("#sysmsg").fadeIn();
-		setTimeout(function(){$("#sysmsg").fadeOut()},1000);
+// 		$("#sysmsg").text("123");
+// 		$("#sysmsg").css("display","inline");
+// 		$("#sysmsg").fadeIn();
+		$("#sysmsg").css("visibility","visible");
+// 		setTimeout(function(){$("#sysmsg").fadeOut()},1000);
+		setTimeout(function(){$("#sysmsg").css("visibility","hidden")},1000);
 	}
 	
 	function showanddissapear_sub(){
@@ -718,23 +727,23 @@ window.onload = function(){
 	
 	
 	var conn_status =localStorage.getItem("connect_status");
-	if(conn_status==null||conn_status=="unload"){
-		localStorage.setItem("connect_status","gameroom");
-	}else if(conn_status=="gameroom"){
-		alert("중복접속 방지");
-		location.href="Main_lobby.html";
-	}
+// 	if(conn_status==null||conn_status=="unload"){
+// 		localStorage.setItem("connect_status","gameroom");
+// 	}else if(conn_status=="gameroom"){
+// 		alert("중복접속 방지");
+// 		location.href="Main_lobby.html";
+// 	}
 	
-	window.onbeforeunload = async function(e) {		
-		//kickout상태면 onbeforeunload fuction을 활용안하고 바로 대기실로
+// 	window.onbeforeunload = async function(e) {		
+// 		//kickout상태면 onbeforeunload fuction을 활용안하고 바로 대기실로
 
-		await localStorage.setItem("connect_status","unload");
-		var kick_out;
-		var dialogText="123";
-		e.returnValue = dialogText;
-	    return dialogText;
+// 		await localStorage.setItem("connect_status","unload");
+// 		var kick_out;
+// 		var dialogText="123";
+// // 		e.returnValue = dialogText;
+// // 	    return dialogText;
 		
-	};
+// 	};
 	
 	// room & game setting related javascript end
 </script>
@@ -915,7 +924,7 @@ window.onload = function(){
 			return;
 		}
 		
-		if(Object.keys(userlist).length-1 == userreadycount){
+		if(Object.keys(userlist).length-1 <= userreadycount){
 			gamestatusupdate("gamestart");
 		}else{
 			 alert("준비되지 않은 플레이어가 있습니다.");
@@ -964,14 +973,18 @@ window.onload = function(){
 						
 						anstry_Interval = setInterval(async function() {
 	
-							if( 1 < timelimit && --timelimit <= 5){
-								system_msg(timelimit+"초 남았습니다")
+							if( 0 < timelimit && --timelimit <= 5){
+// 								system_msg(timelimit+"초 남았습니다");
+								sec_left_reminder(timelimit);
 		
 							}else if(timelimit<=1){
 								clearTimeout(anstry_Interval);
-								system_msg("아무도 맞추지 못했습니다.");
-								erasetochat();
-								await whatisanswer();
+								
+// 								system_msg("아무도 맞추지 못했습니다.");
+								sysgame_alert("아무도 맞추지 못했습니다.");
+// 								erasetochat();
+// 								await whatisanswer();
+								gamestatusupdate("no_answer");
 								
 								setTimeout(function(){
 									gamestatusupdate("one_round_end");
@@ -987,7 +1000,8 @@ window.onload = function(){
 					clearTimeout(anstry_Interval);//정답을 맞췃을경우 interval취소
 					
 					firebase.database().ref('/rooms/'+roomid+'/ongame_answertrying').once("value",function(snapshot){
-						pushtochat("\n"+snapshot.val().user_nick+"님 정답입니다.");
+// 						pushtochat("\n"+snapshot.val().user_nick+"님 정답입니다.");
+						sysgame_alert(snapshot.val().user_nick+"님 정답입니다.");
 					});
 					
 					await whatisanswer();
@@ -1015,8 +1029,7 @@ window.onload = function(){
 						gamestatusupdate("game_end");
 					}else{
 						console.log("roundelse default")
-					}
-					
+					}					
 					break;
 				case "game_end":
 					if(gamehost_isme) deletechat();
@@ -1029,7 +1042,7 @@ window.onload = function(){
 					break;
 					
 				default:
-					console.log("125");
+// 					console.log("125");
 					break;
 				}
 				 
@@ -1053,7 +1066,7 @@ window.onload = function(){
 		});
 		
 		firebase.database().ref('/rooms/'+roomid+'/ongame_quiz').on("value",function(snapshot){
-			console.log("ongame_quiz",snapshot.val());
+// 			console.log("ongame_quiz",snapshot.val());
 			if(snapshot.val()!=null){
 				$('#content-genre').text("장르 : "+snapshot.val().quizgenre);
 				$('#content-quiz').text("문제 내용 : "+snapshot.val().quiz);
@@ -1062,6 +1075,23 @@ window.onload = function(){
 				answer_arr = snapshot.val().quizanswer_array;
 			}
 		});
+		
+		var t1;
+		firebase.database().ref('/rooms/'+roomid+'/ongame_sysalert/left_time').on("value",async function(snapshot){
+			if(snapshot.val()==null) return;
+			$("#limit-timebox").css("visibility","visible");
+			$("#limit-time-rightbox").text(snapshot.val().left_time+"초");
+			
+// 			if(snapshot.val().left_time.toString()=="0"){
+			clearTimeout(t1);
+				t1 = setTimeout(
+					function(){
+						$("#limit-timebox").css("visibility","hidden");
+				},1000);
+// 			}
+			
+		});
+		
 	}
 	
   	function gamestatusupdate(update_value){
@@ -1114,15 +1144,37 @@ window.onload = function(){
 			system_msgcolor : color
 		});
 		
-		firebase.database().ref('/rooms/'+roomid+'/system').update({
+		firebase.database().ref('/rooms/'+roomid+'/system').set({
 			
 		});
 	}
 	
-  	async function whatisanswer(){
-  		await firebase.database().ref('/rooms/'+roomid+'/ongame_quiz/quizanswer_orig').once("value",function(snapshot){
-			system_msg("\n정답은 「"+snapshot.val()+"」 입니다.");
+	async function sysgame_alert(txt){
+		if(!gamehost_isme) return;		
+		
+		var sysmsg_whtisans_local;
+		await whatisanswer().then(result => sysmsg_whtisans_local=result);
+		
+		firebase.database().ref('/rooms/'+roomid+'/sysmsg_altwin').update({
+			sysmsg_alertcontent : txt,
+			sysmsg_whtisans : sysmsg_whtisans_local
 		});
+		
+		firebase.database().ref('/rooms/'+roomid+'/sysmsg_altwin').set({
+			
+		});
+		
+	}
+	
+  	async function whatisanswer(){
+  		var answer;
+  		await firebase.database().ref('/rooms/'+roomid+'/ongame_quiz/quizanswer_orig').once("value",function(snapshot){
+// 			system_msg("\n정답은 「"+snapshot.val()+"」 입니다.");
+// 			$("#sysmsg-whtisans").text("\n정답은 「"+snapshot.val()+"」 입니다.");
+			answer=snapshot.val();
+		});
+  		return answer;
+  		
   	}
   	
  	async function gameprogress_stepup(){//게임진행도 한단계업 메서드
@@ -1187,18 +1239,36 @@ window.onload = function(){
 //   		if(gamehost_isme)
 //   			firebase.database().ref("rooms/"+roomid+"/chatting").remove();
   	}
+	
+	async function sec_left_reminder(txt){
+		await firebase.database().ref('/rooms/'+roomid+'/ongame_sysalert/left_time').update({
+			left_time : txt,
+	  	});
+		
+		await firebase.database().ref('/rooms/'+roomid+'/ongame_sysalert/left_time').set({
+	  	});
+	}
   	
 //game progress related javascript end
 </script>
 
 <script>
 	//system related javascript start
-	var system_winonload = window.onload;	
+	var system_winonload = window.onload;
 	window.onload = function(){
 		system_winonload();//window onload를 여러번 사용하기 위함
-		//시스템 메시지 리스너 
+		//시스템 메시지 리스너
 		firebase.database().ref("rooms/"+roomid+"/system").on("value",function(snapshot){
 			pushtosystem(snapshot.val().system_msg,snapshot.val().system_msgcolor);
+		});
+		
+		firebase.database().ref('/rooms/'+roomid+'/sysmsg_altwin').on("value",function(snapshot){
+			if(snapshot.val()==null) return;
+	 		$("#sysmsg-alertcontent").text(snapshot.val().sysmsg_alertcontent);
+	 		$("#sysmsg-whtisans").text("정답은 「"+snapshot.val().sysmsg_whtisans+"」 입니다.");
+	 		
+	 		$("#sysmsg").css("visibility","visible");
+	 		setTimeout(function(){$("#sysmsg").css("visibility","hidden")},1500);
 		});
 		
 		function pushtosystem(txt,color){
