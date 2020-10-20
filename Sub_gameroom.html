@@ -2,6 +2,7 @@
 <html>
 <head>
 
+<link rel="shortcut icon" href="img/icon/brain.png">
 
 <!-- Animate.css -->
 <link rel="stylesheet" href="css/animate.css">
@@ -44,7 +45,7 @@
 <script src="js/firebase_initiate/firebase_initiate.js"></script>
 
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title id="tab_title">브레인피지컬 - 대기실</title>
 </head>
 <body>
 	<div id="wrapper">
@@ -79,7 +80,7 @@
 
 						<button onclick="gotowait()" class="product-title goout-button">나가기</button>
 
-						<button onclick="showanddissapear()" class="product-title "
+						<button onclick="$('#score_record_modal').modal()" class="product-title "
 							style="width: 2%; border-top: 0px; border-left: 0.5px solid black; border-radius: 0px 5px 5px 0px; outline: 0px;">1</button>
 
 						<div class="product-body content-box">
@@ -161,7 +162,7 @@
 				class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h3 style="font-weight: bold; text-align: center;"
+					<h3 id="member_mng_modal" style="font-weight: bold; text-align: center;"
 						class="modal-title">멤버 관리</h3>
 				</div>
 				<div class="modal-body" style="width: 100%; text-align: center;">
@@ -231,6 +232,45 @@
 					<button type="button" class="btn btn-default"
 						onclick="gameroomsetting()">확인</button>
 					<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+				</div>
+			</div>
+
+		</div>
+	</div>
+	
+	
+	<!-- 점수 화면 -->
+	<div class="modal fade" id="score_record_modal" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div
+				style="width: 400px; margin-left: 40%; margin-top: 8%; vertical-align: middle;"
+				class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h3 style="font-weight: bold; text-align: center;"
+						class="modal-title">점수 화면</h3>
+				</div>
+				<div class="modal-body" style="width: 100%; text-align: center;">					
+
+					
+					<table border="1" style="border: 1px solid black; width:60%; height: 50px; margin: auto; text-align: center;">
+						<th style="text-align:center;">순위</th>
+						<th style="text-align:center;">닉네임</th>
+						<th style="text-align:center;">점수</th>
+						<tbody id="score_record_content"></tbody>
+<!-- 						<tr>첫번째 줄 시작 -->
+<!-- 						    <td>첫번째 칸</td> -->
+<!-- 						    <td>두번째 칸</td> -->
+<!-- 						    <td>세번째 칸</td> -->
+<!-- 						</tr>첫번째 줄 끝 -->
+
+				    </table>
+				
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">확인</button>
 				</div>
 			</div>
 
@@ -423,6 +463,7 @@ window.onload = function(){
 	function manage_member(nick,id,key){
 		if(!gamehost_isme)return;
 		$("#manage_btn_content").html("");
+		$("#member_mng_modal").text("'"+nick+"' 멤버 관리");
 		var mng_btn_content = "";
 		mng_btn_content += "<button type=\"button\" class=\"btn btn-default  modal-mr\" data-dismiss=\"modal\" ";
 		mng_btn_content +="onclick=\"delegate_gamehost('"+id+"')\">방장 위임</button>";
@@ -657,6 +698,8 @@ window.onload = function(){
 		 firebase.database().ref("rooms/"+roomid+"/setting").on("value",function(snapshot){
 			 $('#gameroom-title').text("방제 : " +snapshot.val().roomName);
 			 
+			 $('#tab_title').text("브레인 피지컬 - " +snapshot.val().roomName);
+			 
 			 //모달창의 방제 이름
 			 $('#modal_roomname').val(snapshot.val().roomName);
 			 
@@ -809,6 +852,9 @@ window.onload = function(){
 				"user_answer" : userchatting,
 				"user_nick" : user_nick,
 				"user_id" : userid
+			});
+			
+			firebase.database().ref("rooms/"+roomid+"/ongame_answertrying").set({
 			});	
 		}
 	}
@@ -1096,8 +1142,23 @@ window.onload = function(){
 			},1000);			
 		});
 		
+		firebase.database().ref('/rooms/'+roomid+'/game_record').on("value",async function(snapshot){
+			if(snapshot.val()==null) return;
+			var scr_arr_local = snapshot.val();
+			$("#score_record_content").html("");
+			
+			for (var i = 0; i < scr_arr_local.length; i++) {
+				
+				var scr_value = "<tr><td>"+scr_arr_local[i][1].rank+"</td><td>"+scr_arr_local[i][1].user_nick+"</td><td>"+scr_arr_local[i][1].winscore+"</td></tr>"
+				$("#score_record_content").append(scr_value);
+			}
+			
+			$("#score_record_modal").modal();
+			
+		});
+		
 	}
-	var t1;
+	
 	async function scorerecord_touser(){
 		if(!gamehost_isme) return;
 		var userrecords;
@@ -1108,6 +1169,7 @@ window.onload = function(){
 		
 		if(userrecords==null)return;
 		var scr_rcrd_array = Object.entries(userrecords);
+		console.log("데이터처리전 scr_rcrd_array",scr_rcrd_array);
 		//정렬
 		for(var i =0; i < scr_rcrd_array.length;i++){
 			for (var i2 = i+1; i2 > scr_rcrd_array.length; i2++) {
@@ -1119,7 +1181,7 @@ window.onload = function(){
 			}
 		}
 		
-// 		console.log(scr_rcrd_array);
+		console.log("정렬 scr_rcrd_array",scr_rcrd_array);
 		//등수구하기
 		for (var i = 0; i < scr_rcrd_array.length; i++) {
 			var rank=i+1;
@@ -1135,13 +1197,19 @@ window.onload = function(){
 				}
 			}
 		}
-		console.log("scr_rcrd_array",scr_rcrd_array);
+		console.log("등수  scr_rcrd_array",scr_rcrd_array);
+		
+		await firebase.database().ref('/rooms/'+roomid).update({
+			game_record : scr_rcrd_array
+		});
+		
+		await firebase.database().ref('/rooms/'+roomid+"/game_record").set({
+		});
 	}
 	
 	async function gamescore_reset(){
 		if(!gamehost_isme) return;
 		await firebase.database().ref('/rooms/'+roomid+'/gamescore').set({
-			
 		});
 	}
 	
@@ -1154,7 +1222,8 @@ window.onload = function(){
 		});
 		
 		await firebase.database().ref('/rooms/'+roomid+'/gamescore/'+wnr_inform.user_id).update({
-			winscore : user_score_local+10
+			winscore : user_score_local+10,
+			user_nick:wnr_inform.user_nick
 		});
 	}
 	
@@ -1354,8 +1423,7 @@ window.onload = function(){
 		firebase.database().ref('/rooms/'+roomid+'/sysmsg_altwin').on("value",function(snapshot){
 			if(snapshot.val()==null) return;
 	 		$("#sysmsg-alertcontent").text(snapshot.val().sysmsg_alertcontent);
-	 		$("#sysmsg-whtisans").text("정답은 「"+snapshot.val().sysmsg_whtisans+"」 입니다.");
-	 		
+	 		$("#sysmsg-whtisans").text("정답은 「"+snapshot.val().sysmsg_whtisans+"」 입니다.");	 		
 	 		$("#sysmsg").css("visibility","visible");
 	 		setTimeout(function(){$("#sysmsg").css("visibility","hidden")},1500);
 		});
