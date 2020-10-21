@@ -223,6 +223,8 @@ function randomString(ranlength) {
 				$("#user_nickname").text(snapshot.val().user_nick);
 		  	});
 			
+			nick_change();
+			
 		}else if(ws_userid != null && ws_usernick != null){
 	
 			firebase.database().ref("users/anonymous/"+ws_userid).on("value",function(snapshot){
