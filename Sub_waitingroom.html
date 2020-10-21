@@ -276,17 +276,20 @@ async function enter_game(roomid){
 		
 	}
 	
+	
 	  firebase.database().ref("rooms").on("value",function(snapshot){
 		  
 		  let roomlist=snapshot.val();
 		  $("#rooms-list").html("");
 		  
-		  for(key in roomlist){
+		  for(key in roomlist){  
+			  
 			  let roomref =roomlist[key];
 			  
-			  
-			  
 			  let divcont ="";
+			  
+			  if(roomref.setting.roomName==null) continue;
+			  
 			  
 			  divcont+=("<div class=\'rooms-item rooms-gaming rooms-locked\'>");
 			  divcont+=("<div class=\"room-box\">");
@@ -326,6 +329,8 @@ async function enter_game(roomid){
 			  divcont+=("</div></div>");
 			  
 			  $("#rooms-list").append(divcont);
+			  
+			  
 		  }
 	  });
 	
