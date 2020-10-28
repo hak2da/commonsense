@@ -53,35 +53,35 @@ ul, li {
 
 
 /* ------------------------------------ */
-input {
-  display: block;
-	outline: none;
-	border: none !important;
-}
+/* input { */
+/*   display: block; */
+/* 	outline: none; */
+/* 	border: none !important; */
+/* } */
 
-textarea {
-  display: block;
-  outline: none;
-}
+/* textarea { */
+/*   display: block; */
+/*   outline: none; */
+/* } */
 
-textarea:focus, input:focus {
-  border-color: transparent !important;
-}
+/* textarea:focus, input:focus { */
+/*   border-color: transparent !important; */
+/* } */
 
 /* ------------------------------------ */
-button {
-	outline: none !important;
-	border: none;
-	background: transparent;
-}
+/* button { */
+/* 	outline: none !important; */
+/* 	border: none; */
+/* 	background: transparent; */
+/* } */
 
-button:hover {
-	cursor: pointer;
-}
+/* button:hover { */
+/* 	cursor: pointer; */
+/* } */
 
-iframe {
-	border: none !important;
-}
+/* iframe { */
+/* 	border: none !important; */
+/* } */
 
 
 
