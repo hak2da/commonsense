@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style> 
+div {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  position: relative;
+  animation-name: example;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+/*   animation-delay: 2s;  */
+/*   animation-iteration-count: infinite; */
+/*   animation-direction: alternate; */
+}
+
+/* table{ */
+/* animation-name: example; */
+/*   animation-duration: 3s; */
+/*   animation-timing-function: linear; */
+/* } */
+
+/* table td{ */
+/* animation-name: example; */
+/*   animation-duration: 3s; */
+/*   animation-timing-function: linear; */
+/* } */
+
+/* @keyframes example { */
+/*   0%  {background-color:yellow; left:100px; top:0px;} */
+/*   50%   {background-color:blue; left:30px; top:0px;} */
+/*   100%   {background-color:red; left:0px; top:0px;} */
+/* } */
+
+</style>
+</head>
+<body>
+<table>
+<tr>
+<td>Abraham</td>
+<td>076 9477 4896</td>
+<td>294-318 </td>
+<td><span class="count">200</span></td> 
+</tr>
+<tr >
+<td>Abraham</td>
+<td>076 9477 4896</td>
+<td>294-318 </td>
+<td><span class="count">200</span></td>
+
+</tr>
+<tr >
+<td>Phelan</td>
+<td>0500 034548</td>
+<td>680-1097 Mi Rd.</td>
+<td><span class="count">200</span></td>
+
+</tr>
+<tr>
+<td>Raya</td>
+<td>(01315) 27698</td>
+<td>Ap #289-</td>
+<td></td>
+
+</tr>
+</table>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<script>
+
+$("table tr").hide();
+$("table tr").each(function(index){
+	$(this).delay(index*500).show(1000);
+});
+</script>
+</body>
+</html>

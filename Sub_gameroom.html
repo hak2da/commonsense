@@ -966,7 +966,7 @@ window.onload = function(){
 		}
 	}
 	
-	var game_progress_winonload = window.onload;	
+	var game_progress_winonload = window.onload;
 	window.onload = function(){
 		game_progress_winonload();//window onload를 여러번 사용하기 위함
 		
@@ -1021,13 +1021,10 @@ window.onload = function(){
 						anstry_Interval = setInterval(async function() {
 	
 							if( 0 < timelimit && --timelimit <= 5){
-// 								system_msg(timelimit+"초 남았습니다");
 								sec_left_reminder(timelimit);
 		
 							}else if(timelimit<=1){
 								clearTimeout(anstry_Interval);
-								
-// 								system_msg("아무도 맞추지 못했습니다.");
 								sysgame_alert("아무도 맞추지 못했습니다.");
 
 								gamestatusupdate("no_answer");
@@ -1047,10 +1044,8 @@ window.onload = function(){
 					
 					firebase.database().ref('/rooms/'+roomid+'/ongame_answertrying').once("value",function(snapshot){
 						sysgame_alert(snapshot.val().user_nick+"님 정답입니다.");
-						pushto_syschat("정답입니다.")
+						pushto_syschat(snapshot.val().user_nick+"님 득점!!")
 					});
-					
-// 					await whatisanswer();
 					
 					//여기서 게임라운드 진행value랑 게임라운드 value랑 비교하는 메서드
 					
@@ -1146,7 +1141,6 @@ window.onload = function(){
 				var scr_value = "<tr><td>"+scr_arr_local[i][1].rank+"</td><td>"+scr_arr_local[i][1].user_nick+"</td><td>"+scr_arr_local[i][1].winscore+"</td></tr>"
 				$("#score_record_content").append(scr_value);
 			}
-			
 			$("#score_record_modal").modal();
 			
 		});
@@ -1178,8 +1172,7 @@ window.onload = function(){
 				}
 			}
 		}
-		
-// 		console.log("정렬 scr_rcrd_array",scr_rcrd_array);
+
 		//등수구하기
 		var rank;
 		for (var i = 0; i < scr_rcrd_array.length; i++) {
@@ -1195,7 +1188,6 @@ window.onload = function(){
 				}
 			}
 		}
-// 		console.log("등수  scr_rcrd_array",scr_rcrd_array);
 
 		rank++;
 		for(var key in userlist){
@@ -1218,7 +1210,7 @@ window.onload = function(){
 			game_record : scr_rcrd_array
 		});
 		
-		console.log(scr_rcrd_array);
+// 		console.log(scr_rcrd_array);
 		
 		await recording_usrscore(scr_rcrd_array);
 		
@@ -1282,7 +1274,6 @@ window.onload = function(){
 	function ongame_anstry_reset(){
 		if(!gamehost_isme) return;
 		firebase.database().ref('/rooms/'+roomid+'/ongame_answertrying').set({
-		
 		});
 	}
 	
@@ -1304,10 +1295,12 @@ window.onload = function(){
 //   		document.getElementById("chatcontent").innerHTML="";
   	}
   	
-  	function pushto_syschat(txt){
+  	function pushto_syschat(txt,color){
 		if(!gamehost_isme)return;
+		color==null ? color="black" : "";
 		firebase.database().ref('/rooms/'+roomid+'/syschat').update({
-			system_msg : txt
+			system_msg : txt,
+			color : color
 		});
 		
 		firebase.database().ref('/rooms/'+roomid+'/syschat').set({
@@ -1321,15 +1314,13 @@ window.onload = function(){
     }
     
   	async function get_timelimit(){//게임진행도 한단계업 메서드
-		
-		var time;
-		
+	
+  		var time;
+  	
 		await firebase.database().ref('rooms/'+roomid+'/setting/time_limit').once('value').then(function(snapshot){
 			time = snapshot.val() != null ? snapshot.val() : 0;
 		});
-		
 		return time;
-		
 	}
   	
 	function system_msg(msg,color){
@@ -1479,8 +1470,6 @@ window.onload = function(){
 		function pushtosystem(txt,color){
 			if(color==null) color="black";
 			pushto_syschat(txt)
-// 			document.getElementById("chatcontent").innerHTML+='<span style=\"color:'+color+'\">'+txt+'</span><br>';
-// 			$("#chatroom").scrollTop($("#chatroom")[0].scrollHeight);
 		}
 	}	 
 	//system related javascript end

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style> 
+div {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  position: relative;
+  animation-name: example;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+/*   animation-delay: 2s;  */
+/*   animation-iteration-count: infinite; */
+/*   animation-direction: alternate; */
+}
+
+/* table{ */
+/* animation-name: example; */
+/*   animation-duration: 3s; */
+/*   animation-timing-function: linear; */
+/* } */
+
+table td{
+animation-name: example;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+}
+
+@keyframes example {
+  0%  {background-color:yellow; left:100px; top:0px;}
+  50%   {background-color:blue; left:30px; top:0px;}
+  100%   {background-color:red; left:0px; top:0px;}
+}
+</style>
+</head>
+<body>
+
+<p><b>Note:</b> This example does not work in Internet Explorer 9 and earlier versions.</p>
+
+<div></div>
+<br>
+<table border="1px;">
+<thead>
+<th>제목</th><th>내용</th>
+</thead>
+<tbody>
+<td>새벽의</td>
+<td>저주</td>
+</tbody>
+
+</table>
+
+</body>
+</html>
